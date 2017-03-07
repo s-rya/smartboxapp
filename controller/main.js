@@ -162,7 +162,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
     const makeIncidentTable = function (data) {
         let html = headers + scripts + style + '</head><body>' +
             '<div id="readingPane" ng-app="popup"><div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
-            '<span aria-hidden="true">&times;</span></button></div><div class="container"><h2>Incidents</h2>' +
+            '<span aria-hidden="true">&times;</span></button></div>' +
+            '<div class="contentRead" id="content0">' +
+            '<div class="container"><h2>Incidents</h2>' +
             '<div class="table-responsive">' +
             '<table class="table"><thead><tr><th>#</th><th>Priority</th><th>Description</th></tr></thead><tbody>';
 
@@ -170,7 +172,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             console.log(d);
             html = html + '<tr><td>' + d.incidentRef + '</td><td>' + d.priority + '</td><td>' + d.incidentDesc + '</td></tr>';
         });
-        return html + '</tbody></table></div></div></div></body></html>';
+        return html + '</tbody></table></div></div></div></div></body></html>';
     };
 
     //Message receiver from SmartBox Service
