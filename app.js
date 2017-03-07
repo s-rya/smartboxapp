@@ -8,7 +8,6 @@
  */
 const electron = require('electron');
 const {app, BrowserWindow, ipcMain} = require('electron');
-const utf8 = require('utf8');
 
 let mainWindow = null,
     insertWindow = null,
