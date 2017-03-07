@@ -1,0 +1,45 @@
+<div ng-controller="chatWindow">
+    <form ng-submit="send()">
+<style>
+    .user{
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #5F5F86;
+        padding: 6px;
+        margin-bottom: 7px;
+        margin-left: 20%;
+        margin-right: 13px;
+        word-break: break-word;
+        color: white;
+    }
+    .bot{
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: white;
+        padding: 6px;
+        margin-bottom: 7px;
+        margin-right: 20%;
+        margin-left: 13px;
+        word-break: break-word;
+    }
+</style>
+        <div id="chat" style="display: none; height: 470px; width: 100%; background-image:url('./../assets/img/chat.jpg'); border: 1px solid #ccc; border-radius: 6px;"
+             ng-style="chatWindowStyle">
+            <div id="close" style="float: right; margin-right: 5px;" ng-click="closeChatWindow()">
+                <button type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div scroll-glue id="mainChatWindow" style="height: 90%;width: 100%; overflow-y: auto; overflow-x:hidden">
+                <div ng-bind-html="msg.data" ng-style="chatDialog" class={{msg.class}} ng-repeat="msg in userMsg"></div>
+            </div>
+        </div>
+        <div>
+        <input style="height: 45px; margin-top: 11px; padding-left: 57px;" class="form-control" ng-model="textbox"
+               placeholder="Ask SmartBox" ng-click="openChatWindow()"></input>
+
+        <img id='watsonpic' src='./../assets/img/Watson_logo_100px.gif'
+             style="border-radius: 50%;margin-top:-54px;margin-left:-13px; width:63px; float:left;"/>
+        </div>
+    </form>
+</div>

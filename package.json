@@ -1,0 +1,39 @@
+{
+  "name": "smartbox",
+  "version": "1.0.1",
+  "description": "Smartbox for Honda",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron ./",
+    "dist": "gulp electron"
+  },
+  "keywords": [
+    "Honda",
+    "electron",
+    "Smartbox"
+  ],
+  "author": "IBM",
+  "license": "MIT",
+  "dependencies": {
+    "angular-animate": "^1.5.7",
+    "angular-aria": "^1.5.7",
+    "angular-material": "^1.0.9",
+    "angular-route": "^1.5.7",
+    "asar": "^0.11.0",
+    "electron-packager": "^7.0.4",
+    "electron-prebuilt": "^1.4.13",
+    "grunt": "^1.0.1",
+    "grunt-comment-toggler": "^0.2.2",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-search": "^0.1.8",
+    "gulp": "^3.9.0",
+    "gulp-electron": "0.0.9",
+    "angular": "^1.6.2",
+    "angular-bootstrap": "^0.12.2",
+    "angular-sanitize": "^1.6.2",
+    "angular-websocket": "^2.0.1",
+    "angularjs-scroll-glue": "^2.2.0",
+    "electron": "^1.4.15"
+  }
+}

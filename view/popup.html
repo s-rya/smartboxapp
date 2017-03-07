@@ -1,0 +1,39 @@
+<style>
+    .contentRead {
+        width: 96%;
+        padding: 1px;
+        overflow-y: auto;
+        height: 380px;
+        display: none;
+        border-top: 1px solid #99F8FF;
+        border-bottom: 1px solid #99F8FF;
+    }
+
+    #content0 {
+        display: block;
+    }
+
+    #readingPane {
+        float: left;
+        padding: 60px 0;
+        text-align: center;
+        -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+        box-shadow: 0px 5px 6px #99F8FF;
+        -webkit-box-shadow: 0px 5px 6px #99F8FF;
+        background: white;
+        behavior: url(/pie/PIE.htc);
+        height: 470px;
+        display: block;
+        width: 64%;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        color: black;
+    }
+</style>
+<div id="readingPane">
+    <div class="contentRead" id="content{{$index}}" ng-bind-html="msg.data" ng-style="chatDialog" ng-repeat="msg in displayData"></div>
+    <input type="hidden" value="0" id="counter"/>
+    <input type="hidden" value="{{displayData.length}}" id="finalCounter"/>
+    <div><span id="prev" onclick="clickPrevious()"> << </span> <span id="next" onclick="clickNext()"> >> </span></div>
+</div>

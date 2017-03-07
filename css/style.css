@@ -1,0 +1,118 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+  background: rgba(0, 0, 0, 0);
+}
+
+#watsonpic{
+  -webkit-app-region: drag;
+}
+
+button:focus {
+  outline: 0;
+}
+
+.radial {
+  width: 70px;
+  height: 70px;
+  position: fixed;
+  right: 18px;
+  bottom: 25px;
+  border-radius: 50%;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15), 0px 4px 8px rgba(0, 0, 0, 0.2);
+  -webkit-app-region: drag;
+}
+
+.fab {
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  position: fixed;
+  right: 30px;
+  bottom: 37px;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+  -webkit-app-region: no-drag;
+}
+.fab:hover {
+  background-color: #89CFF0;
+}
+
+#plus {
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+  margin-top: 7px;
+  -webkit-app-region: no-drag;
+}
+
+#fa-1, #fa-2, #fa-3 {
+  position: fixed;
+  background: transparent;
+  border: none;
+  right: -42px;
+  bottom: 30px;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+  color: black;
+  -webkit-app-region: no-drag;
+}
+#fa-1:hover, #fa-2:hover, #fa-3:hover {
+  tansition-delay: 0s;
+  color: #ff8db3;
+}
+
+.radial.open {
+  height: 85px;
+  width: 85px;
+  right: 13px;
+  bottom: 11px;
+  border-radius: 20%;
+  background: rgba(0, 0, 0, 0);
+}
+.radial.open .fab {
+  background-color: #89CFF0;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15), 0px 4px 8px rgba(0, 0, 0, 0.2);
+  right:32px;
+  bottom:32px;
+}
+
+.radial.open #fa-1 {
+  -webkit-transition-delay: 0s;
+          transition-delay: 0s;
+  -webkit-transform: translate(-110px, 10px);
+          transform: translate(-110px, 10px);
+}
+.radial.open #fa-2 {
+  -webkit-transition-delay: 0.1s;
+          transition-delay: 0.1s;
+  -webkit-transform: translate(-112px, -44px);
+          transform: translate(-112px, -44px);
+}
+.radial.open #fa-3 {
+  -webkit-transition-delay: 0.2s;
+          transition-delay: 0.2s;
+  -webkit-transform: translate(-57px, -44px);
+          transform: translate(-57px, -44px);
+}
+.fa-3x {
+	font-size: 1.5em;
+}
+.button {
+    border: none;
+    background: url('/img/SmartBox.jpg') no-repeat top left;
+    padding: 2px 8px;
+}
+#mainimage{
+max-width: 100%;
+border-radius: 50%;
+margin-top:-7px;
+margin-left:-6px;
+pointer-events: none;
+}
