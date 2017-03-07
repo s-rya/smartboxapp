@@ -22,10 +22,17 @@ function createInsertWindow(channel, html) {
         show: false,
         modal: true,
         transparent: true,
-        parent: mainWindow
+        parent: mainWindow,
+        webPreferences: {
+            javascript: true,
+            java: false,
+            directWrite: true,
+            defaultEncoding: 'utf-8'
+        }
     });
 console.log(html);
-    insertWindow.loadURL("data:text/html,"+html);
+
+    insertWindow.loadURL("data:text/html;charset=UTF-8,"+html);
     //insertWindow.loadURL('file://' + __dirname + '/test.html');
     insertWindow.once('ready-to-show', () => {
         insertWindow.show()
@@ -53,7 +60,8 @@ app.on('ready', function () {
         webPreferences: {
             javascript: true,
             java: false,
-            directWrite: true
+            directWrite: true,
+            defaultEncoding: 'UTF-8'
         }
     });
 

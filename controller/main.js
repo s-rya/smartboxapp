@@ -1,6 +1,5 @@
-var {ipcRenderer, remote} = require('electron');
-var app = angular.module('mainView', ['ngRoute', 'ngWebSocket', 'ngSanitize', 'ui.bootstrap', 'luegg.directives']);
-//var app=angular.module('mainView', ['ngRoute', 'ngWebSocket', 'ngSanitize']);
+const {ipcRenderer, remote} = require('electron');
+const app = angular.module('mainView', ['ngRoute', 'ngWebSocket', 'ngSanitize', 'ui.bootstrap', 'luegg.directives']);
 
 app.factory('DataStream', function ($websocket) {
     // Open a WebSocket connection
@@ -87,14 +86,14 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         }
     };
 
-    let headers = '<!DOCTYPE html><html lang="en"><head><title>SmartBox</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
+    let headers = '<!DOCTYPE html><html lang="en"><head><title>SmartBox</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
 
     let scripts = '<script>if (typeof module === \'object\') {window.module = module;module = undefined;}</script>' +
         '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">' +
         '<script src="assets/js/jquery.min.js"></script>' +
         '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>' +
-        '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>' +
-
+        '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js">' +
+        '</script><script>var app = angular.module("popup", [\'ngSanitize\']);</script>' +
         '<script>if (window.module) module = window.module;</script>' +
         '<script>function clickNext() {var nextValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == finalCounter) {counter = -1;}nextValue = counter + 1;document.getElementById(\'counter\').value = nextValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + nextValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(nextValue)+1) +"/"+ totalPages;}function clickPrevious() {var pastValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == 0) {counter = finalCounter + 1;}pastValue = counter - 1;document.getElementById(\'counter\').value = pastValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + pastValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(pastValue)+1)+"/"+ totalPages;}</script>' +
         '<script>const remote = require(\'electron\').remote;function closeWindow(){var window = remote.getCurrentWindow();window.close();}</script>';
@@ -140,12 +139,14 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
 
     const setPopUpData = function (data) {
         let html = headers + scripts + style + '</head><body>' +
-            '<div id="readingPane" ng-app="popup">' +
+            '<script>angular.module(\'popup\', [\'ngSanitize\']).controller(\'dataCtrl\', [\'$scope\', function ($scope) {var array = \''+data.join('###########')+'\';$scope.snippet = array.split(\'###########\');}]);</script>' +
+            '<div id="readingPane" ng-app="popup"  ng-controller="dataCtrl">' +
             '<div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
-            '<span aria-hidden="true">&times;</span></button></div>';
-        data.forEach((d, i) => {
-            html = html + '<div class="contentRead" id="content' + i + '" ng-bind-html=' + d + '</div>';
-        });
+            '<span aria-hidden="true">&times;</span></button></div>' +
+            '<div ng-bind-html="msg" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>';
+        /*data.forEach((d, i) => {
+            html = html + '<div ng-bind-html="msg" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>';
+        });*/
         return html + '<input type="hidden" value="0" id="counter"/>' +
             '<input type="hidden" value="' + data.length + '" id="finalCounter"/>' +
             '<div class="pointers">' +
