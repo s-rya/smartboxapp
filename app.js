@@ -1,8 +1,3 @@
-////////
-// This sample is published as part of the blog article at www.toptal.com/blog
-// Visit www.toptal.com/blog and subscribe to our newsletter to read great posts
-////////
-
 /**
  * Main process
  */
@@ -10,11 +5,11 @@ const electron = require('electron');
 const {app, BrowserWindow, ipcMain} = require('electron');
 
 let mainWindow = null,
-    insertWindow = null,
-    childWindow = null;
+    popUpWindow = null;
 
-function createInsertWindow(channel, html) {
-    insertWindow = new BrowserWindow({
+//To open the Pop up window
+function openPopUpWindow(channel, html) {
+    popUpWindow = new BrowserWindow({
         width: 840,
         height: 636,
         frame: false,
@@ -29,21 +24,19 @@ function createInsertWindow(channel, html) {
             defaultEncoding: 'utf-8'
         }
     });
-console.log(html);
 
-    insertWindow.loadURL("data:text/html;charset=UTF-8,"+html);
-    //insertWindow.loadURL('file://' + __dirname + '/test.html');
-    insertWindow.once('ready-to-show', () => {
-        insertWindow.show()
+    popUpWindow.loadURL("data:text/html;charset=UTF-8,"+html);
+    popUpWindow.once('ready-to-show', () => {
+        popUpWindow.show()
     });
 
-    insertWindow.on('closed', function () {
+    popUpWindow.on('closed', function () {
         console.log('closed new window');
-        insertWindow = null;
+        popUpWindow = null;
         channel.sender.send('popUpClosed', 'bye');
     });
 }
-
+//To open the main window
 app.on('ready', function () {
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize;
     mainWindow = new BrowserWindow({
@@ -54,7 +47,7 @@ app.on('ready', function () {
         transparent: true,
         frame: false,
         resizable: false,
-        alwaysOnTop: false,
+        alwaysOnTop: true,
         title: 'SmartBox',
         webPreferences: {
             javascript: true,
@@ -67,11 +60,10 @@ app.on('ready', function () {
     mainWindow.loadURL('file://' + __dirname + '/view/main.html');
 
     ipcMain.on('openPopUp', function (channel, html) {
-        if (!insertWindow) {
-            createInsertWindow(channel, html);
+        if (!popUpWindow) {
+            openPopUpWindow(channel, html);
         }
 
-        //return (!insertWindow.isclosed() && insertWindow.isVisible()) ? insertWindow.hide() : insertWindow.show();
     });
 });
 
@@ -80,17 +72,18 @@ app.on('window-all-closed', function () {
     app.quit();
 });
 
+//To resize the window
 ipcMain.on('resize', function (e, x, y) {
     console.log("resize invokded");
     mainWindow.setSize(x, y);
-    //mainWindow.setPosition(1000, 250)
 });
 
+//To set position of window
 ipcMain.on('setPos', function (e, x, y) {
     mainWindow.setPosition(x, y);
 });
 
-
+//To resize the window along with position
 ipcMain.on('resizeWithPos', (e, x, y, z) => {
     let windowPos = mainWindow.getPosition();
     mainWindow.setSize(x, y);

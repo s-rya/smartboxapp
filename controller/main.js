@@ -1,6 +1,7 @@
 const {ipcRenderer, remote} = require('electron');
 const app = angular.module('mainView', ['ngRoute', 'ngWebSocket', 'ngSanitize', 'ui.bootstrap', 'luegg.directives']);
 
+//Angular factory module for Websocket connection to SmartBox service
 app.factory('DataStream', function ($websocket) {
     // Open a WebSocket connection
     var dataStream = $websocket('wss://smartsearchboxservice.mybluemix.net');
@@ -23,7 +24,6 @@ app.factory('DataStream', function ($websocket) {
 });
 
 
-//$scope.someData = {};
 app.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when(
             '/', {
@@ -44,6 +44,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
 
     $scope.userMsg = [];
 
+    //To open the chat window when clicks on the Search Box
     $scope.openChatWindow = function () {
         $scope.chatWindowStyle = {
             display: 'block'
@@ -64,6 +65,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
     });
 
 
+    //To close the chat window when the user click on close
     $scope.closeChatWindow = function () {
         isChatWindow = false;
         $scope.textbox = "";
@@ -74,7 +76,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         ipcRenderer.send('resizeWithPos', 350, 70, chatWindowHeight);
     };
 
-
+    //To send the message to SmartBox service when the user hits enter
     $scope.send = function () {
         if ($scope.textbox) {
             $scope.userMsg.push({"data": $scope.textbox, "class": "user"});
@@ -137,6 +139,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '   font-weight: bold;  }' +
         '</style>';
 
+    //To set up the Pop up HTML for Discovery service data
     const setPopUpData = function (data) {
         let html = headers + scripts + style + '</head><body>' +
             '<script>angular.module(\'popup\', [\'ngSanitize\']).controller(\'dataCtrl\', [\'$scope\', function ($scope) {var array = \''+data.join('###########')+'\';$scope.snippet = array.split(\'###########\');}]);</script>' +
@@ -156,6 +159,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '</div></div></body></html>';
     };
 
+    //To set up the Pop up HTML for Cloudant data
     const makeIncidentTable = function (data) {
         let html = headers + scripts + style + '</head><body>' +
             '<div id="readingPane" ng-app="popup"><div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
@@ -170,6 +174,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         return html + '</tbody></table></div></div></div></body></html>';
     };
 
+    //Message receiver from SmartBox Service
     DataStream.onMessage(function (message) {
         console.log(message);
         let data = JSON.parse(message.data);
