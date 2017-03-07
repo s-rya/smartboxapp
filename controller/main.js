@@ -149,9 +149,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         return html + '<input type="hidden" value="0" id="counter"/>' +
             '<input type="hidden" value="' + data.length + '" id="finalCounter"/>' +
             '<div class="pointers">' +
-            '<span id="prev" style="cursor: pointer" onclick="clickPrevious()"> << &nbsp;&nbsp; </span> ' +
+            '<span id="prev" style="cursor: pointer" onclick="clickPrevious()"> < &nbsp;&nbsp;&nbsp; </span> ' +
             '<span id="pageNumber"> 1/' + data.length + ' </span>' +
-            '<span id="next" style="cursor: pointer" onclick="clickNext()"> &nbsp;&nbsp; >> </span>' +
+            '<span id="next" style="cursor: pointer" onclick="clickNext()"> &nbsp;&nbsp;&nbsp; > </span>' +
             '</div></div></body></html>';
     };
 
