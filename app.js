@@ -17,6 +17,7 @@ function openPopUpWindow(channel, html) {
         modal: true,
         transparent: true,
         parent: mainWindow,
+        resizable: false,
         webPreferences: {
             javascript: true,
             java: false,
