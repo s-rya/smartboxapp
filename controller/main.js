@@ -138,7 +138,8 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '   font-weight: bold;  }' +
         '.heading{ position: absolute;' +
         '   width: 98%;' +
-        '   text-align: center;}' +
+        '   text-align: center;' +
+        '   -webkit-app-region: drag;}' +
         '</style>';
 
     //To set up the Pop up HTML for Discovery service data
