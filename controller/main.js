@@ -136,6 +136,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '.pointers {  color: black;' +
         '   text-align:center; ' +
         '   font-weight: bold;  }' +
+        '.heading{ position: absolute;' +
+        '   width: 98%;' +
+        '   text-align: center;}' +
         '</style>';
 
     //To set up the Pop up HTML for Discovery service data
@@ -143,6 +146,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         let html = headers + scripts + style + '</head><body>' +
             '<script>angular.module(\'popup\', [\'ngSanitize\']).controller(\'dataCtrl\', [\'$scope\', \'$sce\', function ($scope, $sce) {var array = \''+data.join('###########')+'\';$scope.snippet = array.split(\'###########\');$scope.clean = function(c){return $sce.trustAsHtml(c);};}]);</script>' +
             '<div id="readingPane" ng-app="popup"  ng-controller="dataCtrl">' +
+            '<div class="heading"><b>Here are the top '+ data.length +' results</b></div>' +
             '<div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
             '<span aria-hidden="true">&times;</span></button></div>' +
             '<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>';
