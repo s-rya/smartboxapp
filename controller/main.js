@@ -92,9 +92,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
 
     let scripts = '<script>if (typeof module === \'object\') {window.module = module;module = undefined;}</script>' +
         '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">' +
-        '<script src="assets/js/jquery.min.js"></script>' +
+        '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>' +
         '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>' +
-        '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js">' +
+        '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>' +
         '<script>if (window.module) module = window.module;</script>' +
         '<script>function clickNext() {var nextValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == finalCounter) {counter = -1;}nextValue = counter + 1;document.getElementById(\'counter\').value = nextValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + nextValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(nextValue)+1) +"/"+ totalPages;}function clickPrevious() {var pastValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == 0) {counter = finalCounter + 1;}pastValue = counter - 1;document.getElementById(\'counter\').value = pastValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + pastValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(pastValue)+1)+"/"+ totalPages;}</script>' +
         '<script>const remote = require(\'electron\').remote;function closeWindow(){var window = remote.getCurrentWindow();window.close();}</script>';
@@ -184,7 +184,11 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         if (data.type === 'discovery') {
 
             res.forEach(r => {
-                resArray.push(r['Documentation with HTML']);
+                resArray.push(
+                    r['Documentation with HTML'].replace(/\\/g, "\\\\")
+                        .replace(/\$/g, "\\$")
+                        .replace(/'/g, "\\'")
+                        .replace(/"/g, "\\\""));
                 // $scope.discoveryData.push({"data": r['Documentation with HTML'], "class": "bot"});
                 //$scope.userMsg.push({"data": r['Documentation with HTML'], "class": "bot"});
             });
