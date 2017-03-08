@@ -181,6 +181,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         let data = JSON.parse(message.data);
         let res = data.result;
         let resArray = [];
+        if (data.context) {
+            DataStream.context = data.context;
+        }
         if (data.type === 'discovery') {
 
             res.forEach(r => {
