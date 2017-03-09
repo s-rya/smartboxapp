@@ -210,7 +210,12 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
                 //$scope.userMsg.push({"data": text, "class": "bot"});
             });*/
         } else {
-            $scope.userMsg.push({"data": res, "class": "bot"});
+            if(isChatWindow){
+                $scope.userMsg.push({"data": res, "class": "bot"});
+                if(data.event && data.event === 'closeWindoow'){
+                    $scope.closeChatWindow();
+                }
+            }
         }
     });
 }]);
