@@ -107,7 +107,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '.contentRead { ' +
         '   overflow-y: auto; ' +
         '   padding:10px 20px;' +
-        '   height: 576px; ' +
+        '   height: 585px; ' +
         '   font-size:14px;' +
         '   margin-top: 22px;' +
         '   display: none; ' +
@@ -125,9 +125,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '   -webkit-box-shadow: 0px 5px 6px #99F8FF; ' +
         '   background: white;  ' +
         '   behavior: url(/pie/PIE.htc);  ' +
-        '   height: 624px;' +
+        '   height: 633px;' +
         '   display: block;  ' +
-        '   width: 836px;  ' +
+        '   width: 720px;  ' +
         '   border: 1px solid #ccc; ' +
         '   opacity: 1;' +
         '   BACKGROUND: GHOSTWHITE;' +
@@ -137,7 +137,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '   text-align:center; ' +
         '   font-weight: bold;  }' +
         '.heading{ position: absolute;' +
-        '   width: 98%;' +
+        '   width: 97%;' +
         '   text-align: center;' +
         '   -webkit-app-region: drag;}' +
         '</style>';

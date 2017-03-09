@@ -10,8 +10,8 @@ let mainWindow = null,
 //To open the Pop up window
 function openPopUpWindow(channel, html) {
     popUpWindow = new BrowserWindow({
-        width: 840,
-        height: 636,
+        width: 724,
+        height: 645,
         frame: false,
         show: false,
         modal: true,
