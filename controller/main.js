@@ -193,7 +193,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
 
             res.forEach(r => {
                 resArray.push(
-                    r['Documentation with HTML'].replace(/\\/g, "\\\\")
+                    '<p align="center"><b>' + r['Item Name'] + '</b></p>' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
                         .replace(/\$/g, "\\$")
                         .replace(/'/g, "\\'")
                         .replace(/"/g, "\\\""));
