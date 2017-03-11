@@ -1,5 +1,17 @@
 const {ipcRenderer, remote} = require('electron');
 const app = angular.module('mainView', ['ngRoute', 'ngWebSocket', 'ngSanitize', 'ui.bootstrap', 'luegg.directives']);
+const numbers = {
+    '1' : '',
+    '2' : 'second ',
+    '3' : 'third ',
+    '4' : 'fourth ',
+    '5' : 'fifth ',
+    '6' : 'sixth ',
+    '7' : 'seventh ',
+    '8' : 'eighth ',
+    '9' : 'ninth ',
+    '10' : 'tenth '
+};
 
 //Angular factory module for Websocket connection to SmartBox service
 app.factory('DataStream', function ($websocket) {
@@ -139,7 +151,10 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '.heading{ position: absolute;' +
         '   width: 97%;' +
         '   text-align: center;' +
-        '   -webkit-app-region: drag;}' +
+        '   -webkit-app-region: drag;' +
+        '    height: 22px;} ' +
+        'img{' +
+        '   max-width: 650px}' +
         '</style>';
 
     //To set up the Pop up HTML for Discovery service data
@@ -147,7 +162,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         let html = headers + scripts + style + '</head><body>' +
             '<script>angular.module(\'popup\', [\'ngSanitize\']).controller(\'dataCtrl\', [\'$scope\', \'$sce\', function ($scope, $sce) {var array = \''+data.join('###########')+'\';$scope.snippet = array.split(\'###########\');$scope.clean = function(c){return $sce.trustAsHtml(c);};}]);</script>' +
             '<div id="readingPane" ng-app="popup"  ng-controller="dataCtrl">' +
-            '<div class="heading"><b>Here are the top '+ data.length +' results</b></div>' +
+            '<div class="heading"></div>' +
             '<div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
             '<span aria-hidden="true">&times;</span></button></div>' +
             '<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>';
@@ -191,9 +206,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         }
         if (data.type === 'discovery') {
 
-            res.forEach(r => {
+            res.forEach((r,i) => {
                 resArray.push(
-                    '<p align="center"><b>' + r['Item Name'] + '</b></p>' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
+                    '<p><b>Here is the '+ numbers[i+1]+'best answer for: '+ data.question +'</b></p><p align="center"><b>' + r['Item Name'] + '</b></p>' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
                         .replace(/\$/g, "\\$")
                         .replace(/'/g, "\\'")
                         .replace(/"/g, "\\\""));
@@ -211,7 +226,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         } else {
             if(isChatWindow){
                 $scope.userMsg.push({"data": res, "class": "bot"});
-                if(data.event && data.event === 'closeWindoow'){
+                if(data.event && data.event === 'closeWindow'){
                     $scope.closeChatWindow();
                 }
             }
