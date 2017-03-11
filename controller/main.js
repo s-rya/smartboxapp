@@ -55,13 +55,13 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             DataStream.send(request).then(function (resp) {
                 console.log("watson request" + JSON.stringify(request));
             });
-            ipcRenderer.send('resizeWithPos', 350, chatWindowHeight);
+            ipcRenderer.send('resizeWithPos', 335, chatWindowHeight);
         }
     };
 
     ipcRenderer.on('popUpClosed', () => {
         console.log('recieved close event in UI');
-        $scope.userMsg.push({"data": 'are you happy with the results?', "class": "bot"})
+        //$scope.userMsg.push({"data": 'are you happy with the results?', "class": "bot"})
     });
 
 
@@ -73,7 +73,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         $scope.chatWindowStyle = {
             display: 'none'
         };
-        ipcRenderer.send('resizeWithPos', 350, 70, chatWindowHeight);
+        ipcRenderer.send('resizeWithPos', 335, 70, chatWindowHeight);
     };
 
     //To send the message to SmartBox service when the user hits enter
@@ -106,9 +106,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '   background: rgba(0, 0, 0, 0);  }' +
         '.contentRead { ' +
         '   overflow-y: auto; ' +
-        '   padding:10px 20px;' +
+        '   padding:15px 40px;' +
         '   height: 585px; ' +
-        '   font-size:14px;' +
+        '   font-size:12px;' +
         '   margin-top: 22px;' +
         '   display: none; ' +
         '   BACKGROUND: WHITE; ' +
@@ -197,9 +197,8 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
                         .replace(/\$/g, "\\$")
                         .replace(/'/g, "\\'")
                         .replace(/"/g, "\\\""));
-                // $scope.discoveryData.push({"data": r['Documentation with HTML'], "class": "bot"});
-                //$scope.userMsg.push({"data": r['Documentation with HTML'], "class": "bot"});
             });
+            $scope.userMsg.push({"data": 'Popping out the best results now', "class": "bot"});
             ipcRenderer.send('openPopUp', setPopUpData(resArray));
         } else if (data.type === 'cloudant') {
             ipcRenderer.send('openPopUp', makeIncidentTable(res));

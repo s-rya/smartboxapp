@@ -41,7 +41,7 @@ function openPopUpWindow(channel, html) {
 app.on('ready', function () {
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize;
     mainWindow = new BrowserWindow({
-        width: 350,
+        width: 335,
         height: 70,
         x: width-350,
         y: height-100,
