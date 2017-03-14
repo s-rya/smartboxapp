@@ -27,9 +27,8 @@ function openPopUpWindow(channel, html) {
     });
 
     popUpWindow.loadURL("data:text/html;charset=UTF-8,"+html);
-    popUpWindow.once('ready-to-show', () => {
-        popUpWindow.show()
-    });
+    popUpWindow.show();
+
 
     popUpWindow.on('closed', function () {
         console.log('closed new window');
