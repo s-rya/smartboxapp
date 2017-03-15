@@ -166,9 +166,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
             '<span aria-hidden="true">&times;</span></button></div>' +
             '<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>';
-        /*data.forEach((d, i) => {
-            html = html + '<div ng-bind-html="msg" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>';
-        });*/
+
         return html + '<input type="hidden" value="0" id="counter"/>' +
             '<input type="hidden" value="' + data.length + '" id="finalCounter"/>' +
             '<div class="pointers">' +
@@ -188,12 +186,20 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<div class="table-responsive">' +
             '<table class="table"><thead><tr><th>#</th><th>Priority</th><th>Description</th></tr></thead><tbody>';
 
-        data.forEach((d, i) => {
-            console.log(d);
-            html = html + '<tr><td>' + d.incidentRef + '</td><td>' + d.priority + '</td><td>' + d.incidentDesc + '</td></tr>';
+        data.forEach(d => {
+            html = html + '<tr><td>' + d.incidentRef + '</td><td>' + d.priority + '</td><td>' + truncate(d.incidentDesc) + '</td></tr>';
         });
         return html + '</tbody></table></div></div></div></div></body></html>';
     };
+
+    /*This method inserts ellipsis if the text length is more than 68*/
+    function truncate(string) {
+        if (string.length > 68)
+            return string.substring(0, 65) + '...';
+        else
+            return string;
+    }
+
 
     //Message receiver from SmartBox Service
     DataStream.onMessage(function (message) {
@@ -217,12 +223,6 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             ipcRenderer.send('openPopUp', setPopUpData(resArray));
         } else if (data.type === 'cloudant') {
             ipcRenderer.send('openPopUp', makeIncidentTable(res));
-            /*res.forEach(r => {
-                let text = '<b>Incident Id: </b>' + r.incidentId + '<br>' +
-                    '<b>Priority:</b> ' + r.priority + '<br>' +
-                    '<b>Description: </b>' + r.incidentDesc;
-                //$scope.userMsg.push({"data": text, "class": "bot"});
-            });*/
         } else {
             if(isChatWindow){
                 $scope.userMsg.push({"data": res, "class": "bot"});
