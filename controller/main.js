@@ -108,7 +108,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>' +
         '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>' +
         '<script>if (window.module) module = window.module;</script>' +
-        '<script>function clickNext() {var nextValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == finalCounter) {counter = -1;}nextValue = counter + 1;document.getElementById(\'counter\').value = nextValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + nextValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(nextValue)+1) +"/"+ totalPages;}function clickPrevious() {var pastValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == 0) {counter = finalCounter + 1;}pastValue = counter - 1;document.getElementById(\'counter\').value = pastValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + pastValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(pastValue)+1)+"/"+ totalPages;}</script>' +
+        '<script>function clickNext() {var nextValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == finalCounter) {counter = -1;}nextValue = counter + 1;document.getElementById(\'counter\').value = nextValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + nextValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(nextValue)+1) +"&nbsp;/&nbsp;"+ totalPages;}function clickPrevious() {var pastValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == 0) {counter = finalCounter + 1;}pastValue = counter - 1;document.getElementById(\'counter\').value = pastValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + pastValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(pastValue)+1)+"&nbsp;/&nbsp;"+ totalPages;}</script>' +
         '<script>function showDetails(incidentId) {document.getElementById(\'incidentContainer\').style.display = "none";document.getElementById(incidentId + \'container\').style.display = "block";}function goBack(incidentId) {document.getElementById(\'incidentContainer\').style.display = "block";document.getElementById(incidentId + \'container\').style.display = "none";}</script>' +
         '<script>const remote = require(\'electron\').remote;function closeWindow(){var window = remote.getCurrentWindow();window.close();}</script>';
 
@@ -146,9 +146,13 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '   BACKGROUND: GHOSTWHITE;' +
         '   border-radius: 6px;  ' +
         '   color: black;  }' +
-        '.pointers {  color: black;' +
+        '.pointers {  color: #707070;' +
         '   text-align:center; ' +
-        '   font-weight: bold;  }' +
+        '   font-weight: bold;' +
+        '   font-size: 12px;  ' +
+        '   padding-top: 3px;  }' +
+        '.pointers:hover {  ' +
+        '   color: black;  }' +
         '.heading{ position: absolute;' +
         '   width: 97%;' +
         '   text-align: center;' +
@@ -213,7 +217,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<input type="hidden" value="' + data.length + '" id="finalCounter"/>' +
             '<div class="pointers">' +
             '<span id="prev" style="cursor: pointer" onclick="clickPrevious()"> < &nbsp;&nbsp;&nbsp; </span> ' +
-            '<span id="pageNumber"> 1/' + data.length + ' </span>' +
+            '<span id="pageNumber"> 1&nbsp;/&nbsp;' + data.length + ' </span>' +
             '<span id="next" style="cursor: pointer" onclick="clickNext()"> &nbsp;&nbsp;&nbsp; > </span>' +
             '</div></div></body></html>';
     };
@@ -244,10 +248,10 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '</div></div></body></html>';
     };
 
-    /*This method inserts ellipsis if the text length is more than 68*/
+    /*This method inserts ellipsis if the text length is more than 60*/
     function truncate(string) {
-        if (string.length > 68)
-            return string.substring(0, 65) + '...';
+        if (string.length > 60)
+            return string.substring(0, 55) + '...';
         else
             return string;
     }
@@ -270,9 +274,10 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
                         .replace(/'/g, "\\'")
                         .replace(/"/g, "\\\""));
             });
-            $scope.userMsg.push({"data": 'Popping out the best results now', "class": "bot"});
+            $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
             ipcRenderer.send('openPopUp', setPopUpData(resArray));
         } else if (data.type === 'cloudant') {
+            $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
             ipcRenderer.send('openPopUp', makeIncidentTable(res));
         } else {
             if(isChatWindow){
