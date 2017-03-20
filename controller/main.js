@@ -233,15 +233,18 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<table class="table"><thead><tr><th>#</th><th>Priority</th><th>Description</th></tr></thead><tbody>';
         let incidentCardHtml = '';
         data.forEach(d => {
-            html = html + '<tr><td class="incident" id="'+d.incidentRef+'" style="cursor:pointer;color:#0000EE;" onclick="showDetails(\''+d.incidentRef+'\')">' + d.incidentRef + '</td><td>' + d.priority + '</td><td>' + truncate(d.incidentDesc) + '</td></tr>';
-            incidentCardHtml = incidentCardHtml + '<div id="'+d.incidentRef+'container" class="incDetContainer" style="display:none">' +
+            html = html + '<tr><td class="incident" id="'+d.incidentId+'" style="cursor:pointer;color:#0000EE;" onclick="showDetails(\''+d.incidentId+'\')">' + d.incidentId + '</td><td>' + d.priority + '</td><td>' + truncate(d.incidentDesc) + '</td></tr>';
+            incidentCardHtml = incidentCardHtml + '<div id="'+d.incidentId+'container" class="incDetContainer" style="display:none">' +
                 '<div class="navigation">' +
-                '<div id="backButton" onclick="goBack(\''+d.incidentRef+'\')" style="marign:0;padding:0; float:left;"><img src="http://icons.iconarchive.com/icons/icons8/ios7/512/Arrows-Right-icon.png" class="backImg" alt="Back"></div>' +
+                '<div id="backButton" onclick="goBack(\''+d.incidentId+'\')" style="marign:0;padding:0; float:left;"><img src="http://icons.iconarchive.com/icons/icons8/ios7/512/Arrows-Right-icon.png" class="backImg" alt="Back"></div>' +
                 '<div id="editButton" style="padding:0;float:right;margin-right:10px;"><img src="https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_mode_edit_48px-128.png" class="editImg" alt="Edit"></div></div>' +
                 '<div class="card" style="width: 50rem;margin-left:20px;margin-right:20px;"><div class="card-block">' +
-                '<h2 class="card-title">'+d.incidentRef+'</h2>' +
-                '<p class="card-text priority"><b>Priority:</b><br/>'+d.priority+'</p>' +
+                '<h2 class="card-title">'+d.incidentId+'</h2>' +
+                '<h4 class="card-title">'+d.applicationName+'</h4>' +
+                '<h4 class="card-title">'+d.assignmentGroup+'</h4>' +
+                '<p class="card-text priority"><b>'+d.priority+'</b>&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Assigned to:</b> '+d.assignedTo+'&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Status:</b> '+d.status+'</p>' +
                 '<p class="card-text description"><b>Description:</b><br/>'+d.incidentDesc+'</p>' +
+                '<p class="card-text description"><b>Work Notes:</b>'+d.workNotes.replace(/(\d{4}-\d{2}-\d{2})/g , '<br/><br/>$1')+'</p>' +
                 '</div></div></div>';
         });
         return html + '</tbody></table></div></div>' + incidentCardHtml +
