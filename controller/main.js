@@ -64,10 +64,35 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         };
         if (!isChatWindow) {
             isChatWindow = true;
-            let request = {"input": {"text": 'hi'}, "user": {}, "context": DataStream.context};
-            DataStream.send(request).then(function (resp) {
-                console.log("watson request" + JSON.stringify(request));
-            });
+            if (DataStream.user) {
+                let name = DataStream.user.fname.charAt(0).toUpperCase() + DataStream.user.fname.substr(1).toLowerCase();
+                $scope.userMsg.push({
+                    "data": 'Hello ' + name + '! I\'m Smart Box. What are you looking for?',
+                    "class": "bot"
+                });
+            } else {
+                fs.readFile('user.json', 'utf8', (err, data) => {
+                    if (!err) {
+                        DataStream.user = JSON.parse(data);
+                        let name = DataStream.user.fname.charAt(0).toUpperCase() + DataStream.user.fname.substr(1).toLowerCase();
+                        $scope.userMsg.push({
+                            "data": 'Hello ' + name + '! I\'m Smart Box. What are you looking for?',
+                            "class": "bot"
+                        });
+                    } else {
+                        $scope.userMsg.push({
+                            "data": 'Hello! I\'m Smart Box. What are you looking for?',
+                            "class": "bot"
+                        });
+                    }
+
+                });
+            }
+
+            /*let request = {"input": {"text": 'hi'}, "user": {}, "context": DataStream.context};
+             DataStream.send(request).then(function (resp) {
+             console.log("watson request" + JSON.stringify(request));
+             });*/
             ipcRenderer.send('resizeWithPos', 335, chatWindowHeight);
         }
     };
@@ -94,17 +119,25 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         if ($scope.textbox) {
             $scope.userMsg.push({"data": $scope.textbox, "class": "user"});
             if (DataStream.user) {
-                let request = {"input": {"text": $scope.textbox}, "user": DataStream.user, "context": DataStream.context};
+                let request = {
+                    "input": {"text": $scope.textbox},
+                    "user": DataStream.user,
+                    "context": DataStream.context
+                };
                 $scope.textbox = "";
                 DataStream.send(request).then(function (resp) {
                     console.log("watson request" + JSON.stringify(request));
                 });
             } else {
                 fs.readFile('user.json', 'utf8', (err, data) => {
-                    if(!err){
-                        console.log('xxxxxxxxxxxxxxxxx',data);
+                    if (!err) {
+                        console.log('xxxxxxxxxxxxxxxxx', data);
                         DataStream.user = JSON.parse(data);
-                        let request = {"input": {"text": $scope.textbox}, "user": JSON.parse(data), "context": DataStream.context};
+                        let request = {
+                            "input": {"text": $scope.textbox},
+                            "user": JSON.parse(data),
+                            "context": DataStream.context
+                        };
                         $scope.textbox = "";
                         DataStream.send(request).then(function (resp) {
                             console.log("watson request" + JSON.stringify(request));
