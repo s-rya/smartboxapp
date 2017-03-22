@@ -25,8 +25,8 @@
 
 <div style="display: block;width: 300px;" class="modal-content" ng-controller="userController">
     <!-- Modal Header -->
-    <div class="modal-header">
-        <button type="button" class="close"
+    <div class="modal-header" style="text-align: center;">
+        <button type="button" style="margin-top: -15px;margin-right: -9px;" class="close"
                 data-dismiss="modal" ng-click="closeStart()">
             <span aria-hidden="true">&times;</span>
             <span class="sr-only">Close</span>
@@ -37,25 +37,25 @@
     </div>
     <form ng-submit="saveUserInfo()">
         <!-- Modal Body -->
-        <div class="modal-body">
+        <div class="modal-body" style="padding: 10px;">
 
 
             <div class="form-group">
                 <label for="fname">First Name</label>
                 <input style="height: 40px" ng-model="fname" type="text" class="form-control"
-                       id="fname" placeholder="Enter First Name"/>
+                       id="fname" ng-required="true" placeholder="Enter First Name"/>
             </div>
             <div class="form-group">
                 <label for="lname">Last Name</label>
                 <input style="height: 40px" ng-model="lname" type="text" class="form-control"
-                       id="lname" placeholder="Enter Last Name"/>
+                       id="lname" ng-required="true" placeholder="Enter Last Name"/>
             </div>
 
 
         </div>
 
         <!-- Modal Footer -->
-        <div class="modal-footer">
+        <div class="modal-footer" style="text-align: center;padding: 10px;">
             <button id="submit" type="submit" class="btn btn-primary">
                 Save
             </button>
