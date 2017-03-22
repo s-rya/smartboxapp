@@ -1,16 +1,17 @@
 const {ipcRenderer, remote} = require('electron');
 const app = angular.module('mainView', ['ngRoute', 'ngWebSocket', 'ngSanitize', 'ui.bootstrap', 'luegg.directives']);
+const fs = require('fs');
 const numbers = {
-    '1' : '',
-    '2' : 'second ',
-    '3' : 'third ',
-    '4' : 'fourth ',
-    '5' : 'fifth ',
-    '6' : 'sixth ',
-    '7' : 'seventh ',
-    '8' : 'eighth ',
-    '9' : 'ninth ',
-    '10' : 'tenth '
+    '1': '',
+    '2': 'second ',
+    '3': 'third ',
+    '4': 'fourth ',
+    '5': 'fifth ',
+    '6': 'sixth ',
+    '7': 'seventh ',
+    '8': 'eighth ',
+    '9': 'ninth ',
+    '10': 'tenth '
 };
 
 //Angular factory module for Websocket connection to SmartBox service
@@ -92,11 +93,29 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
     $scope.send = function () {
         if ($scope.textbox) {
             $scope.userMsg.push({"data": $scope.textbox, "class": "user"});
-            let request = {"input": {"text": $scope.textbox}, "user": {}, "context": DataStream.context};
-            $scope.textbox = "";
-            DataStream.send(request).then(function (resp) {
-                console.log("watson request" + JSON.stringify(request));
-            });
+            if (DataStream.user) {
+                let request = {"input": {"text": $scope.textbox}, "user": DataStream.user, "context": DataStream.context};
+                $scope.textbox = "";
+                DataStream.send(request).then(function (resp) {
+                    console.log("watson request" + JSON.stringify(request));
+                });
+            } else {
+                fs.readFile('user.json', 'utf8', (err, data) => {
+                    if(!err){
+                        console.log('xxxxxxxxxxxxxxxxx',data);
+                        DataStream.user = JSON.parse(data);
+                        let request = {"input": {"text": $scope.textbox}, "user": JSON.parse(data), "context": DataStream.context};
+                        $scope.textbox = "";
+                        DataStream.send(request).then(function (resp) {
+                            console.log("watson request" + JSON.stringify(request));
+                        });
+                    } else {
+                        //TODO: Need to decide what to do
+                    }
+
+                });
+            }
+
         }
     };
 
@@ -207,7 +226,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
     //To set up the Pop up HTML for Discovery service data
     const setPopUpData = function (data) {
         let html = headers + scripts + style + '</head><body>' +
-            '<script>angular.module(\'popup\', [\'ngSanitize\']).controller(\'dataCtrl\', [\'$scope\', \'$sce\', function ($scope, $sce) {var array = \''+data.join('###########')+'\';$scope.snippet = array.split(\'###########\');$scope.clean = function(c){return $sce.trustAsHtml(c);};}]);</script>' +
+            '<script>angular.module(\'popup\', [\'ngSanitize\']).controller(\'dataCtrl\', [\'$scope\', \'$sce\', function ($scope, $sce) {var array = \'' + data.join('###########') + '\';$scope.snippet = array.split(\'###########\');$scope.clean = function(c){return $sce.trustAsHtml(c);};}]);</script>' +
             '<div id="readingPane" ng-app="popup"  ng-controller="dataCtrl">' +
             '<div class="heading"></div>' +
             '<div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
@@ -234,18 +253,18 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<table class="table"><thead><tr><th>#</th><th>Priority</th><th>Description</th></tr></thead><tbody>';
         let incidentCardHtml = '';
         data.forEach(d => {
-            html = html + '<tr><td class="incident" id="'+d.incidentId+'" style="cursor:pointer;color:#0000EE;" onclick="showDetails(\''+d.incidentId+'\')">' + d.incidentId + '</td><td>' + d.priority + '</td><td>' + truncate(d.incidentDesc) + '</td></tr>';
-            incidentCardHtml = incidentCardHtml + '<div id="'+d.incidentId+'container" class="incDetContainer" style="display:none">' +
+            html = html + '<tr><td class="incident" id="' + d.incidentId + '" style="cursor:pointer;color:#0000EE;" onclick="showDetails(\'' + d.incidentId + '\')">' + d.incidentId + '</td><td>' + d.priority + '</td><td>' + truncate(d.incidentDesc) + '</td></tr>';
+            incidentCardHtml = incidentCardHtml + '<div id="' + d.incidentId + 'container" class="incDetContainer" style="display:none">' +
                 '<div class="navigation">' +
-                '<div id="backButton" onclick="goBack(\''+d.incidentId+'\')" style="marign:0;padding:0; float:left;"><img src="http://icons.iconarchive.com/icons/icons8/ios7/512/Arrows-Right-icon.png" class="backImg" alt="Back"></div>' +
+                '<div id="backButton" onclick="goBack(\'' + d.incidentId + '\')" style="marign:0;padding:0; float:left;"><img src="http://icons.iconarchive.com/icons/icons8/ios7/512/Arrows-Right-icon.png" class="backImg" alt="Back"></div>' +
                 '<div id="editButton" style="padding:0;float:right;margin-right:10px;"><img src="https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_mode_edit_48px-128.png" class="editImg" alt="Edit"></div></div>' +
                 '<div class="card" style="width: 50rem;margin-left:20px;margin-right:20px;"><div class="card-block">' +
-                '<h2 class="card-title">'+d.incidentId+'</h2>' +
-                '<h4 class="card-title">'+d.applicationName+'</h4>' +
-                '<h4 class="card-title">'+d.assignmentGroup+'</h4>' +
-                '<p class="card-text priority"><b>'+d.priority+'</b>&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Assigned to:</b> '+d.assignedTo+'&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Status:</b> '+d.status+'</p>' +
-                '<p class="card-text description"><b>Description:</b><br/>'+d.incidentDesc+'</p>' +
-                '<p class="card-text description"><b>Work Notes:</b>'+d.workNotes.replace(/(\d{4}-\d{2}-\d{2})/g , '<br/><br/>$1')+'</p>' +
+                '<h2 class="card-title">' + d.incidentId + '</h2>' +
+                '<h4 class="card-title">' + d.applicationName + '</h4>' +
+                '<h4 class="card-title">' + d.assignmentGroup + '</h4>' +
+                '<p class="card-text priority"><b>' + d.priority + '</b>&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Assigned to:</b> ' + d.assignedTo + '&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Status:</b> ' + d.status + '</p>' +
+                '<p class="card-text description"><b>Description:</b><br/>' + d.incidentDesc + '</p>' +
+                '<p class="card-text description"><b>Work Notes:</b>' + d.workNotes.replace(/(\d{4}-\d{2}-\d{2})/g, '<br/><br/>$1') + '</p>' +
                 '</div></div></div>';
         });
         return html + '</tbody></table></div></div>' + incidentCardHtml +
@@ -271,9 +290,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             DataStream.context = data.context;
         }
         if (data.type === 'discovery') {
-            res.forEach((r,i) => {
+            res.forEach((r, i) => {
                 resArray.push(
-                    '<p><b>Here is the '+ numbers[i+1]+'best answer for: <i>'+ data.question +'</i></b></p><p align="center"><b>' + r['Item Name'] + '</b></p>' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
+                    '<p><b>Here is the ' + numbers[i + 1] + 'best answer for: <i>' + data.question + '</i></b></p><p align="center"><b>' + r['Item Name'] + '</b></p>' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
                         .replace(/\$/g, "\\$")
                         .replace(/'/g, "\\'")
                         .replace(/"/g, "\\\""));
@@ -284,9 +303,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
             ipcRenderer.send('openPopUp', makeIncidentTable(res));
         } else {
-            if(isChatWindow){
+            if (isChatWindow) {
                 $scope.userMsg.push({"data": res, "class": "bot"});
-                if(data.event && data.event === 'closeWindow'){
+                if (data.event && data.event === 'closeWindow') {
                     $scope.closeChatWindow();
                 }
             }
