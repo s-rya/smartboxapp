@@ -233,7 +233,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<span aria-hidden="true">&times;</span></button></div>' +
             //'<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>' +
             '<div class="contentRead" id="content0">' +
-            '<p><b>Here are the best answers for: <i>' + question + '</i></b></p>' +
+            '<p style="font-size: 14px;"><b>Here are the best answers for: <i>' + question + '</i></b></p>' +
             '<div class="incDetContainer1" ng-repeat="msg in snippet">' +
             '<div id="block{{$index}}" style="height: 85px; overflow: hidden;" ng-bind-html="clean(msg)">' +
             '<div style="display: block" id="block{{$index}}feedback">' +
@@ -300,10 +300,10 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         if (data.type === 'discovery') {
             res.forEach((r, i) => {
                 resArray.push(
-                    '<p><b>' + r['Item Name'] + '</b></p>' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
+                    '<p><b>' + r['Item Name'] + '</b></p><p style="font-size: 11px;">' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
                         .replace(/\$/g, "\\$")
                         .replace(/'/g, "\\'")
-                        .replace(/"/g, "\\\"") + '<div style="display: none" id="block'+i+'feedback">' +
+                        .replace(/"/g, "\\\"") + '</p><div style="display: none" id="block'+i+'feedback">' +
                     '<img id="upImage" style="float: left" onclick="thumbsUp()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
                     '<img id="downImage" style="float: right" onclick="thumbsDown()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
                     '</div>');
