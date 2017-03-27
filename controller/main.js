@@ -121,6 +121,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '<script>const shell = require(\'electron\').shell;$(document).on(\'click\', \'a[href^="http"]\', function(event) {event.preventDefault();shell.openExternal(this.href);});</script>' +
         '<script>function clickNext() {var nextValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == finalCounter) {counter = -1;}nextValue = counter + 1;document.getElementById(\'counter\').value = nextValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + nextValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(nextValue)+1) +"&nbsp;/&nbsp;"+ totalPages;}function clickPrevious() {var pastValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == 0) {counter = finalCounter + 1;}pastValue = counter - 1;document.getElementById(\'counter\').value = pastValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + pastValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(pastValue)+1)+"&nbsp;/&nbsp;"+ totalPages;}</script>' +
         '<script>function showDetails(incidentId) {document.getElementById(\'incidentContainer\').style.display = "none";document.getElementById(incidentId + \'container\').style.display = "block";document.getElementById(incidentId).style.color = "#551A8B";}function goBack(incidentId) {document.getElementById(\'incidentContainer\').style.display = "block";document.getElementById(incidentId + \'container\').style.display = "none";}</script>' +
+        '<script>$(document).ready(function(){$("div[id^=\'block\']").click(function(){let divID = $(this).attr(\'id\');$(this).css(\'height\',\'auto\');for(i=0;i<5;i++){if(divID!="block"+i)$("#block"+i).css(\'height\',\'85px\');if(divID+"feedback"!="block"+i+"feedback"){$("#block"+i+\'feedback\').hide();}}  $("#"+divID+"feedback").show();});});</script>' +
+        '<script>function thumbsUp(){alert("Thanks for liking me :-)");}</script>' +
+        '<script>function thumbsDown(){alert("I am still learning, hope to serve you better next time.");}</script>' +
         '<script>const remote = require(\'electron\').remote;function closeWindow(){var window = remote.getCurrentWindow();window.close();}</script>';
 
     let style = '<style>' +
@@ -212,21 +215,35 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '   border-radius: 10px;  } ' +
         '.navigation {  ' +
         '   height: 40px;  }' +
+        '.incDetContainer1 {  ' +
+        '   border-bottom: 1px solid #99F8FF;  ' +
+        '   margin-bottom: 10px;  ' +
+        '   cursor: pointer;    ' +
+        '   padding-bottom: 25px;   ' +
+        '   padding-top: 5px;  }' +
         '</style>';
 
     //To set up the Pop up HTML for Discovery service data
-    const setPopUpData = function (data) {
+    const setPopUpData = function (data, question) {
         let html = headers + scripts + style + '</head><body>' +
             '<script>angular.module(\'popup\', [\'ngSanitize\']).controller(\'dataCtrl\', [\'$scope\', \'$sce\', function ($scope, $sce) {var array = \'' + data.join('###########') + '\';$scope.snippet = array.split(\'###########\');$scope.clean = function(c){return $sce.trustAsHtml(c);};}]);</script>' +
             '<div id="readingPane" ng-app="popup"  ng-controller="dataCtrl">' +
             '<div class="heading"></div>' +
             '<div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
             '<span aria-hidden="true">&times;</span></button></div>' +
-            '<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>';
+            //'<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>' +
+            '<div class="contentRead" id="content0">' +
+            '<p><b>Here are the best answers for: <i>' + question + '</i></b></p>' +
+            '<div class="incDetContainer1" ng-repeat="msg in snippet">' +
+            '<div id="block{{$index}}" style="height: 85px; overflow: hidden;" ng-bind-html="clean(msg)">' +
+            '<div style="display: block" id="block{{$index}}feedback">' +
+            '<img id="upImage" style="float: left" onclick="thumbsUp()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
+            '<img id="downImage" style="float: right" onclick="thumbsDown()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
+            '</div></div></div>';
 
         return html + '<input type="hidden" value="0" id="counter"/>' +
             '<input type="hidden" value="' + data.length + '" id="finalCounter"/>' +
-            '<div class="pointers">' +
+            '<div class="pointers" style="display: none">' +
             '<span id="prev" style="cursor: pointer" onclick="clickPrevious()"> < &nbsp;&nbsp;&nbsp; </span> ' +
             '<span id="pageNumber"> 1&nbsp;/&nbsp;' + data.length + ' </span>' +
             '<span id="next" style="cursor: pointer" onclick="clickNext()"> &nbsp;&nbsp;&nbsp; > </span>' +
@@ -283,13 +300,16 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         if (data.type === 'discovery') {
             res.forEach((r, i) => {
                 resArray.push(
-                    '<p><b>Here is the ' + numbers[i + 1] + 'best answer for: <i>' + data.question + '</i></b></p><p align="center"><b>' + r['Item Name'] + '</b></p>' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
+                    '<p><b>' + r['Item Name'] + '</b></p>' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
                         .replace(/\$/g, "\\$")
                         .replace(/'/g, "\\'")
-                        .replace(/"/g, "\\\""));
+                        .replace(/"/g, "\\\"") + '<div style="display: none" id="block'+i+'feedback">' +
+                    '<img id="upImage" style="float: left" onclick="thumbsUp()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
+                    '<img id="downImage" style="float: right" onclick="thumbsDown()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
+                    '</div>');
             });
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
-            ipcRenderer.send('openPopUp', setPopUpData(resArray));
+            ipcRenderer.send('openPopUp', setPopUpData(resArray, data.question));
         } else if (data.type === 'cloudant') {
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
             ipcRenderer.send('openPopUp', makeIncidentTable(res));
