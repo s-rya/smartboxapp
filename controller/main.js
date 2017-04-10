@@ -18,9 +18,8 @@ const numbers = {
 //Angular factory module for Websocket connection to SmartBox service
 app.factory('DataStream', function ($websocket) {
     // Open a WebSocket connection
-    var dataStream = $websocket('wss://smartsearchboxservice.mybluemix.net');
-    var context = {};
-    //var dataStream = $websocket('wss://smartbox1.mybluemix.net');
+    //var dataStream = $websocket('wss://smartsearchboxservice.mybluemix.net');
+    var dataStream = $websocket('wss://smartbox-dev.mybluemix.net');
     dataStream.onOpen(function (data) {
         console.log("connection opened");
         return dataStream;
@@ -122,9 +121,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '<script>function clickNext() {var nextValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == finalCounter) {counter = -1;}nextValue = counter + 1;document.getElementById(\'counter\').value = nextValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + nextValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(nextValue)+1) +"&nbsp;/&nbsp;"+ totalPages;}function clickPrevious() {var pastValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == 0) {counter = finalCounter + 1;}pastValue = counter - 1;document.getElementById(\'counter\').value = pastValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + pastValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(pastValue)+1)+"&nbsp;/&nbsp;"+ totalPages;}</script>' +
         '<script>function showDetails(incidentId) {document.getElementById(\'incidentContainer\').style.display = "none";document.getElementById(incidentId + \'container\').style.display = "block";document.getElementById(incidentId).style.color = "#551A8B";}function goBack(incidentId) {document.getElementById(\'incidentContainer\').style.display = "block";document.getElementById(incidentId + \'container\').style.display = "none";}</script>' +
         '<script>$(document).ready(function(){$("div[id^=\'block\']").click(function(){let divID = $(this).attr(\'id\');if($("#"+divID + "feedback").is(":visible")){$(this).css("height", "40px").css("display","-webkit-box");$("#"+divID + "feedback").hide();} else {$(this).css("height", "auto").css("display","block");$("#"+divID + "feedback").show();}for(i=0;i<10;i++){if(divID!="block"+i)$("#block"+i).css(\'height\',\'40px\').css("display","-webkit-box");if(divID+"feedback"!="block"+i+"feedback"){$("#block"+i+\'feedback\').hide();}}});});</script>' +
-        '<script>function thumbsUp(){alert("Thanks for liking me :-)");}</script>' +
-        '<script>function thumbsDown(){alert("I am still learning, hope to serve you better next time.");}</script>' +
-        '<script>const remote = require(\'electron\').remote;function closeWindow(){var window = remote.getCurrentWindow();window.close();}</script>';
+        '<script>function thumbsUp(ele){var number = $(ele).attr(\'id\').split("-")[1]; var id = $(ele).attr(\'id\'); if($("#"+id).css("backgroundColor") == "rgba(0, 0, 0, 0)"){$("#"+id).css("backgroundColor","greenyellow");$("#" + id).attr("value","true");}else{$("#"+id).css("backgroundColor","rgba(0, 0, 0, 0)");$("#" + id).attr("value","false");} $("#downImage-" + number).attr("value","false");$("#downImage-"+number).css("backgroundColor","rgba(0, 0, 0, 0)") }</script>' +
+        '<script>function thumbsDown(ele){var number = $(ele).attr(\'id\').split("-")[1]; var id = $(ele).attr(\'id\'); if($("#"+id).css("backgroundColor") == "rgba(0, 0, 0, 0)"){$("#"+id).css("backgroundColor","blueviolet");$("#" + id).attr("value","true");}else{$("#"+id).css("backgroundColor","rgba(0, 0, 0, 0)");$("#" + id).attr("value","false");} $("#upImage-" + number).attr("value","false");$("#upImage-"+number).css("backgroundColor","rgba(0, 0, 0, 0)")}</script>' +
+        '<script>const remote = require(\'electron\').remote;var payload = [];function closeWindow(){for (i = 0; i < 10; i++) {if($("#upImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"), "rank":"good"})} else if ($("#downImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"), "rank":"bad"})}}$.post("https://smartbox-dev.mybluemix.net/rank",{payload: payload});var window = remote.getCurrentWindow();setTimeout(function(){ window.close(); }, 1000);}</script>';
 
     let style = '<style>' +
         'body {  font-family: "Lato", sans-serif !important;' +
@@ -236,10 +235,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<p style="font-size: 14px;"><b>Here are the best answers for: <i>' + question + '</i></b></p>' +
             '<div class="incDetContainer1" ng-repeat="msg in snippet">' +
             '<div id="block{{$index}}" style="height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1;-webkit-box-orient: vertical;text-overflow: ellipsis;" ng-bind-html="clean(msg)">' +
-            '<div style="display: block" id="block{{$index}}feedback">' +
-            '<img id="upImage" style="float: left" onclick="thumbsUp()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
-            '<img id="downImage" style="float: right" onclick="thumbsDown()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
-            '</div></div></div>';
+            '</div></div>';
 
         return html + '<input type="hidden" value="0" id="counter"/>' +
             '<input type="hidden" value="' + data.length + '" id="finalCounter"/>' +
@@ -304,8 +300,8 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
                         .replace(/\$/g, "\\$")
                         .replace(/'/g, "\\'")
                         .replace(/"/g, "\\\"") + '</p><div style="display: none" id="block'+i+'feedback">' +
-                    '<img id="upImage" style="float: left" onclick="thumbsUp()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
-                    '<img id="downImage" style="float: right" onclick="thumbsDown()" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
+                    '<img id="upImage-'+i+'" value="false" answerId="'+r.id+'" question="'+data.question+'" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
+                    '<img id="downImage-'+i+'" value="false" answerId="'+r.id+'" question="'+data.question+'" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
                     '</div>');
             });
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
