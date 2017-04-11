@@ -1,6 +1,8 @@
 const {ipcRenderer, remote} = require('electron');
+const dialog = remote.dialog;
 const app = angular.module('mainView', ['ngRoute', 'ngWebSocket', 'ngSanitize', 'ui.bootstrap', 'luegg.directives']);
 const fs = require('fs');
+const rp = require('request-promise');
 
 const numbers = {
     '1': '',
@@ -14,6 +16,8 @@ const numbers = {
     '9': 'ninth ',
     '10': 'tenth '
 };
+
+
 
 //Angular factory module for Websocket connection to SmartBox service
 app.factory('DataStream', function ($websocket) {
@@ -94,18 +98,70 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
     //To send the message to SmartBox service when the user hits enter
     $scope.send = function () {
         const user = require('../user.json');
-        if ($scope.textbox) {
-            $scope.userMsg.push({"data": $scope.textbox, "class": "user"});
-            let request = {
-                "input": {"text": $scope.textbox},
-                "user": user,
-                "context": DataStream.context
-            };
-            $scope.textbox = "";
-            DataStream.send(request).then(function (resp) {
-                console.log("watson request" + JSON.stringify(request));
-            });
+        let text = $scope.textbox;
+        if (text) {
+            const uploadRegex = /^(upload document|upload doc)$/g;
+            $scope.userMsg.push({"data": text, "class": "user"});
+            if(uploadRegex.test(text.trim())){
+                dialog.showOpenDialog(remote.getCurrentWindow(),{
+                    title: 'Select file to upload',
+                    filters: [
+                        { name: 'Doc', extensions: ['docx'] }
+                    ],
+                    properties: ['openFile']
+                },(file) => {
+                    if(file && file.length > 0) {
+                        dialog.showMessageBox(remote.getCurrentWindow(),{
+                            type:"info",
+                            buttons: ["Ok"],
+                            defaultId: 0,
+                            title: "Document upload",
+                            message: "Document upload is in progress."
+                        });
 
+                        rp({
+                            method: 'POST',
+                            url: 'https://smartbox-dev.mybluemix.net/upload',
+                            headers: {
+                                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+                            },
+                            formData: {
+                                file: { value: fs.createReadStream(file[0]),
+                                    options: { filename: file[0].split('\\').pop(), contentType: null } }
+                            }
+                        }).then(data => {
+                            console.log(data.success);
+                            console.log(data);
+                            if(data && JSON.parse(data).success){
+                                dialog.showMessageBox(remote.getCurrentWindow(),{
+                                    type:"info",
+                                    buttons: ["Ok"],
+                                    defaultId: 0,
+                                    title: "Document upload",
+                                    message: "Document uploaded successfully."
+                                });
+                            }
+                            //TODO: Need to handle error cases
+                        }).catch(err => {
+                            console.log(err);
+
+                        });
+                    }
+                });
+            } else {
+                DataStream.send({
+                    "input": {"text": text},
+                    "user": user,
+                    "context": DataStream.context
+                }).then(function (resp) {
+                    console.log("watson request" + JSON.stringify({
+                            "input": {"text": text},
+                            "user": user,
+                            "context": DataStream.context
+                        }));
+                });
+            }
+            $scope.textbox = "";
         }
     };
 
