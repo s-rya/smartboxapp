@@ -26,6 +26,7 @@
     "angularjs-scroll-glue": "^2.2.0",
     "asar": "^0.11.0",
     "electron": "^1.4.15",
+    "electron-log": "^2.2.2",
     "electron-packager": "^7.0.4",
     "electron-prebuilt": "^1.4.13",
     "grunt": "^1.0.1",
@@ -35,6 +36,7 @@
     "grunt-search": "^0.1.8",
     "gulp": "^3.9.0",
     "gulp-electron": "0.0.9",
+    "redis": "^2.7.1",
     "request-promise": "^4.2.0"
   }
 }

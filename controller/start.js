@@ -18,7 +18,7 @@ angularApp.controller('userController', ['$scope', function ($scope) {
     $scope.saveUserInfo = function () {
         console.log(this.fname);
         console.log(this.lname);
-        var data = '{"fname": "' + this.fname + '","lname": "' + this.lname + '" }';
+        var data = '{"fname": "' + this.fname + '","lname": "' + this.lname + '" ,"email": "' + this.email + '"}';
         fs.writeFile("./user.json", data, function (err) {
             if (err) {
                 //TODO: Need to decide what need to be done

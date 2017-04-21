@@ -1,47 +1,80 @@
 <div ng-controller="chatWindow">
     <form ng-submit="send()">
-<style>
-    .user{
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        background: #5F5F86;
-        padding: 6px;
-        margin-bottom: 7px;
-        margin-left: 20%;
-        margin-right: 13px;
-        word-break: break-word;
-        color: white;
-        font-size: 12px;
-    }
-    .bot{
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        background: white;
-        padding: 6px;
-        margin-bottom: 7px;
-        margin-right: 20%;
-        margin-left: 13px;
-        word-break: break-word;
-        font-size: 12px;
-    }
-</style>
-        <div id="chat" style="display: none; height: 470px; width: 100%; background-image:url('./../assets/img/chat.jpg'); border: 1px solid #ccc; border-radius: 6px;"
+        <style>
+            .user {
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                background: #2154AC;
+                padding: 6px;
+                margin-bottom: 7px;
+                margin-left: 20%;
+                margin-right: 13px;
+                word-break: break-word;
+                color: white;
+                font-size: 12px;
+            }
+
+            .bot {
+                border: 1px solid #2154AC;
+                border-radius: 6px;
+                background: white;
+                padding: 6px;
+                margin-bottom: 7px;
+                margin-right: 20%;
+                margin-left: 13px;
+                word-break: break-word;
+                font-size: 12px;
+            }
+
+            .infoIcon:hover {
+                opacity: 0.7;
+            }
+
+            .infoClass {
+                height: 80px;
+                width: 200px;
+                padding: 5px;
+                background: ghostwhite;
+                border: 2px solid #eee;
+                border-radius: 12px;
+                margin-top: 20px;
+                margin-left:110px;
+                position: absolute;
+                display: none;
+            }
+        </style>
+
+        <div id="chat"
+             style="display: none; height: 470px; width: 100%; background-image:url('./../assets/img/chat.jpg'); border: 1px solid #ccc; border-radius: 6px;"
              ng-style="chatWindowStyle">
+
             <div id="close" style="float: right; margin-right: 5px;" ng-click="closeChatWindow()">
                 <button type="button" class="close" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
+            </div>
+            <div class="infoIcon" style="opacity: 0.3;cursor: pointer;" ng-click="showInfoMsg()">
+                <img src="./../assets/img/info.png" style="width: 20px;height: 20px; margin-right: 2px; margin-top: 2px;float: right">
+            </div>
+            <div class="infoClass" ng-style="infoClassStyle">
+                <div id="close" style="float: right; margin-top: -7px;" ng-click="closeInfoMsg()">
+                    <button type="button" class="close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div style="margin-top: 5px">Just type in to get the results like <i>Dealers in TESS, what is reevoo?</i></div>
             </div>
             <div scroll-glue id="mainChatWindow" style="height: 90%;width: 100%; overflow-y: auto; overflow-x:hidden">
                 <div ng-bind-html="msg.data" ng-style="chatDialog" class={{msg.class}} ng-repeat="msg in userMsg"></div>
             </div>
         </div>
         <div>
-        <input style="height: 45px; margin-top: 11px; padding-left: 70px;" ng-keyup="openChatWindow()" class="form-control" ng-model="textbox"
-               placeholder="Ask SmartBox" ng-click="openChatWindow()"></input>
+            <input style="height: 45px; margin-top: 11px; padding-left: 70px;" ng-keyup="openChatWindow()"
+                   class="form-control" ng-model="textbox"
+                   placeholder="Ask SmartBox" ng-click="openChatWindow()" />
 
-        <img id='watsonpic' src='./../assets/img/Watson_logo_100px.gif'
-             style="border-radius: 12%;margin-top:-48px;width:63px; float:left;"/>
+            <img id='watsonpic' src='./../assets/img/Watson_logo_100px.gif'
+                 style="border-radius: 12%;margin-top:-48px;width:63px; float:left;"/>
         </div>
     </form>
 </div>

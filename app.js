@@ -4,6 +4,7 @@
 const electron = require('electron');
 const {app, BrowserWindow, ipcMain} = require('electron');
 const fs = require('fs');
+const redis = require('./redis');
 
 let mainWindow = null,
     popUpWindow = null;
@@ -18,6 +19,7 @@ function openPopUpWindow(channel, html) {
         modal: true,
         transparent: true,
         parent: mainWindow,
+        alwaysOnTop: true,
         resizable: false,
         webPreferences: {
             javascript: true,
@@ -29,7 +31,6 @@ function openPopUpWindow(channel, html) {
 
     popUpWindow.loadURL("data:text/html;charset=UTF-8," + html);
     popUpWindow.show();
-
 
     popUpWindow.on('closed', () => {
         console.log('closed new window');
@@ -61,8 +62,8 @@ app.on('ready', () => {
     fs.readFile('user.json', 'utf8', (err, data) => {
         if (err) {
             let startUpWindow = new BrowserWindow({
-                width: 300,
-                height: 320,
+                width: 320,
+                height: 380,
                 transparent: true,
                 frame: false,
                 resizable: false,
@@ -101,14 +102,14 @@ app.on('window-all-closed', () => {
 });
 
 ipcMain.on('exit', () => {
-    console.log("exit invokded");
+    console.log("exit invoked");
     app.quit();
 });
 
 
 //To resize the window
 ipcMain.on('resize', (e, x, y) => {
-    console.log("resize invokded");
+    console.log("resize invoked");
     mainWindow.setSize(x, y);
 });
 
@@ -128,4 +129,9 @@ ipcMain.on('resizeWithPos', (e, x, y, z) => {
     }
 });
 
-
+ipcMain.on('popup-search', (e,appName, question) => {
+    const user = require('./user.json');
+    //const user = require('./../../user.json');
+    redis.set('newSearch-'+user.email,{appName: appName, question: question});
+    popUpWindow.loadURL('file://' + __dirname + '/view/new-popup.html');
+});
