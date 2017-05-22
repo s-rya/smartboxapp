@@ -108,7 +108,8 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             const helpRegex = /^(help|help me)$/ig;
             $scope.userMsg.push({"data": text, "class": "user"});
             if(uploadRegex.test(text.trim())){
-                dialog.showOpenDialog(remote.getCurrentWindow(),{
+                ipcRenderer.send('upload-box');
+                /*dialog.showOpenDialog(remote.getCurrentWindow(),{
                     title: 'Select file to upload',
                     filters: [
                         { name: 'Doc', extensions: ['docx'] }
@@ -152,7 +153,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
 
                         });
                     }
-                });
+                });*/
             } else if(helpRegex.test(text.trim())){
                 $scope.userMsg.push({"data": 'Just type in to get the results like <i>Dealers in TESS, what is reevoo?<i>', "class": "bot"});
             }else {
@@ -186,7 +187,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '<script>function showPrev(){document.getElementById("content1").style.display = "none";document.getElementById("content0").style.display = "block";}</script>' +
         '<script>function showAppList(){document.getElementById("parentDisable").style.display = "block";document.getElementById("didntAnswer").style.display = "block";document.getElementById("content1").style.display = "none";document.getElementById("content0").style.display = "block";}</script>' +
         '<script>function closeApplist(){document.getElementById("parentDisable").style.display = "none";document.getElementById("didntAnswer").style.display = "none";}</script>' +
-        '<script>const rem = require(\'electron\').remote;const dialog = rem.dialog;function openUploadWindow() {dialog.showOpenDialog(remote.getCurrentWindow(),{title: "Select file to upload", filters: [{ name: "Doc", extensions: ["docx"] }], properties: ["openFile"]},function(file) {})}</script>' +
+        '<script>const rem = require(\'electron\').remote;const dialog = rem.dialog;function openUploadWindow() {ipcr.send("upload-box");}</script>' +
         '' +
         '<script>function clickNext() {var nextValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == finalCounter) {counter = -1;}nextValue = counter + 1;document.getElementById(\'counter\').value = nextValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + nextValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(nextValue)+1) +"&nbsp;/&nbsp;"+ totalPages;}function clickPrevious() {var pastValue = 0;var counter = parseInt(document.getElementById(\'counter\').value);var totalPages = parseInt(document.getElementById(\'finalCounter\').value);var finalCounter = totalPages - 1;var id = "content" + counter;if (counter == 0) {counter = finalCounter + 1;}pastValue = counter - 1;document.getElementById(\'counter\').value = pastValue;document.getElementById(id).style.display = \'none\';document.getElementById("content" + pastValue).style.display = \'block\';document.getElementById("pageNumber").innerHTML = (parseInt(pastValue)+1)+"&nbsp;/&nbsp;"+ totalPages;}</script>' +
         '<script>function showDetails(incidentId) {document.getElementById(\'incidentContainer\').style.display = "none";document.getElementById(incidentId + \'container\').style.display = "block";document.getElementById(incidentId).style.color = "#551A8B";}function goBack(incidentId) {document.getElementById(\'incidentContainer\').style.display = "block";document.getElementById(incidentId + \'container\').style.display = "none";}</script>' +
@@ -307,10 +308,11 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '   height: 45px; ' +
         '   padding-top: 10px; ' +
         '   padding-left: 10px;  }  ' +
-        '.didntAnswer {  ' +
+        '.didntAnswer {      ' +
+        '   margin-top: 65px;' +
+        '   margin-left: 97px;' +
         '   background-color: ghostwhite;' +
         '   width: 524px;  ' +
-        '   margin: 97px;  ' +
         '   padding: 20px; ' +
         '   border-radius: 20px; ' +
         '   box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);' +
@@ -322,45 +324,78 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
     //To set up the Pop up HTML for Discovery service data
     const setPopUpData = function (data, question) {
         let html = headers + scripts + style + '</head><body>' +
-            '<script>const ipcr = require("electron").ipcRenderer;angular.module(\'popup\', [\'ngSanitize\']).controller(\'dataCtrl\', [\'$scope\', \'$sce\', function ($scope, $sce) { $scope.sendSearchData = function(){ipcr.send("popup-search",this.appName,\''+question+'\');};var array = \'' + data.join('###########') + '\';$scope.snippet = array.split(\'###########\');$scope.clean = function(c){return $sce.trustAsHtml(c);};}]);</script>' +
+            '<script>' +
+            'const ipcr = require("electron").ipcRenderer;' +
+            'angular.module("popup", ["ngSanitize"])' +
+            '.controller("dataCtrl", ["$scope", "$sce","$http", function ($scope, $sce, $http) { ' +
+            '   $scope.sendSearchData = function(){' +
+            '       ipcr.send("popup-search",this.appName,\''+question+'\');    };' +
+            '   $scope.appName = "rephrase+Rephrase your question";' +
+            '   $scope.showApplicationList = function(){' +
+            '      $http({' +
+            '               method:"GET",' +
+            '               url: "https://844d8c57-58b6-4391-8b52-50492bc81db2-bluemix.cloudant.com/discovery-collection/b92685acb07f94e969aa1a10460e1e36",' +
+            '               headers: {  "Authorization": "Basic ODQ0ZDhjNTctNThiNi00MzkxLThiNTItNTA0OTJiYzgxZGIyLWJsdWVtaXg6YWNiYjBkNGM4YzVhMjUxZGIwNjBkMzg5MGZjOTI5YWZiYjczMmM4MGZmN2FmOTQ4ZGI1ZDRkYjUxMmYzMjdlYQ=="  }' +
+            '           }).then(result => {' +
+            '               $scope.appListNames = [];' +
+            '               console.log(result);' +
+            '               $scope.appListNames = result.data.appList;' +
+            '               $scope.appListNames.push({name:"Rephrase your question", shortName:"rephrase"});' +
+            '               $scope.appListNames.push({name:"None of the above", shortName:"noneOfTheAbove"});' +
+            '               $scope.parentDisableStyle = { display: "block" }; ' +
+            '               $scope.didntAnswerStyle = { display: "block" };' +
+            '               $scope.content0Style = { display: "block" };' +
+            '               $scope.content1Style = { display: "none" };' +
+            '           })' +
+            '   };' +
+            '   var array = \'' + data.join('###########') + '\';' +
+            '   $scope.snippet = array.split(\'###########\');' +
+            '   $scope.clean = function(c){' +
+            '       return $sce.trustAsHtml(c);};}]);' +
+            '</script>' +
             '' +
             '' +
             '' +
             '<div id="readingPane" ng-app="popup"  ng-controller="dataCtrl">' +
             '<div class="heading"></div>' +
-            '<div id="parentDisable"></div>' +
+            '<div id="parentDisable" ng-style="parentDisableStyle"></div>' +
             '<div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
             '<span aria-hidden="true">&times;</span></button></div>' +
             '' +
-            '<div ng-if="snippet.length > 5" class="contentRead" id="content1">' +
+            '<div ng-if="snippet.length > 5" ng-style="content1Style" class="contentRead" id="content1">' +
             '<div class="incDetContainer1" ng-repeat="msg in snippet | limitTo: 5-snippet.length">' +
             '<div id="block{{$index+5}}" style="height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;" ng-bind-html="clean(msg)">' +
             '</div></div>' +
             '<div style="float: left" onclick="showPrev()"><a href>&lt;&lt; Back</a></div>' +
-            '<div style="float: right" onclick="showAppList()"><a href>Didn\'t get your answer?</a></div></div>' +
+            '<div style="float: right" ng-click="showApplicationList()"><a href>Didn\'t get your answer?</a></div></div>' +
             '' +
-            '<div id="didntAnswer" class="didntAnswer" style="display: none;position: absolute; z-index:999"><div id="close" style="float: right; margin-top: -10px;margin-right: -5px;" onclick="closeApplist()">' +
+            '<div id="didntAnswer" class="didntAnswer" ng-style="didntAnswerStyle" style="display: none;position: absolute; z-index:999"><div id="close" style="float: right; margin-top: -10px;margin-right: -5px;" onclick="closeApplist()">' +
             '<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>' +
             '<div class="selectApp"><p>Please select the application in which you want to search:</p><form ng-submit="sendSearchData()">' +
+            '' +
+            '<div ng-repeat="app in appListNames" class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value={{app.shortName}}+{{app.name}}>{{app.name}}</label></div>' +
+            '' +
+            '' +
+            /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="rephrase">Rephrase your question</label></div>' +
             '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="tess+Honda TESS">Honda TESS</label></div>' +
             '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="webepc+Honda WebEPC">Honda WebEPC</label></div>' +
             '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="mdm+Honda MDM">Honda MDM</label></div>' +
             '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="customerdb+Honda CustomerDB">Honda CustomerDB</label></div>' +
-            '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="drama+Honda DRAMA">Honda DRAMA</label></div>' +
-            /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" value="upload">None of the above</label>' +
-            '<div ng-switch="appName"><div ng-switch-when="upload" onclick="openUploadWindow()">' +
-            '<button style="float: right; margin-top: -28px; margin-right: 10px;" id="submit" type="submit" class="btn btn-primary">Upload AID for new Application</button></div></div></div>' +*/
+            '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="drama+Honda DRAMA">Honda DRAMA</label></div>' +*/
+            /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value="upload">None of the above</label>' +*/
+            '<div ng-switch="appName"><div ng-switch-when="noneOfTheAbove+None of the above" onclick="openUploadWindow()">' +
+            '<button style="float: right; margin-top: -52px;  margin-left: 220px;  position: absolute;" id="submit" type="submit" class="btn btn-primary">Upload Document for new Application</button></div></div>' +
             '<div style="margin: auto; width: 12%"><button style="margin-top: 10px" id="submit" type="submit" class="btn btn-primary">Done</button></div>' +
             '</form></div></div>' +
             '' +
             //'<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>' +
-            '<div class="contentRead" id="content0">' +
+            '<div class="contentRead" id="content0" ng-style="content0Style">' +
             '<p style="font-size: 14px;"><b>Here are the best answers for: <i>' + question + '</i></b></p>' +
             '<div class="incDetContainer1" ng-repeat="msg in snippet | limitTo: 5">' +
             '<div id="block{{$index}}" style="height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;" ng-bind-html="clean(msg)">' +
             '</div></div>' +
             '<div ng-if="snippet.length > 5" class="viewMore" style="float: right" onclick="viewMoreResults()"><a href="">View more &gt;&gt;</a></div>' +
-            '<div ng-if="snippet.length <= 5" style="float: right" onclick="showAppList()"><a href>Didn\'t get your answer?</a></div>';
+            '<div ng-if="snippet.length <= 5" style="float: right" ng-click="showApplicationList()"><a href>Didn\'t get your answer?</a></div>';
 
         return html + '<input type="hidden" value="0" id="counter"/>' +
             '<input type="hidden" value="' + data.length + '" id="finalCounter"/>' +

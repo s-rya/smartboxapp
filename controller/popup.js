@@ -52,7 +52,7 @@ app.run(function ($rootScope) {
 });
 
 
-app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope', function ($scope, $sce, $timeout, $rootScope) {
+app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope','$http', function ($scope, $sce, $timeout, $rootScope, $http) {
     $scope.snippet = [];
     $scope.isLoading = true;
     $scope.$on('API-loaded', function () {
@@ -87,5 +87,26 @@ app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope', funct
     $scope.clean = function (c) {
         return $sce.trustAsHtml(c);
     };
+
+
+    $scope.appName = "rephrase+Rephrase your question";
+    $scope.showApplicationList = function(){
+        $http({
+            method:"GET",
+            url: "https://844d8c57-58b6-4391-8b52-50492bc81db2-bluemix.cloudant.com/discovery-collection/b92685acb07f94e969aa1a10460e1e36",
+            headers: {  "Authorization": "Basic ODQ0ZDhjNTctNThiNi00MzkxLThiNTItNTA0OTJiYzgxZGIyLWJsdWVtaXg6YWNiYjBkNGM4YzVhMjUxZGIwNjBkMzg5MGZjOTI5YWZiYjczMmM4MGZmN2FmOTQ4ZGI1ZDRkYjUxMmYzMjdlYQ=="  }
+        }).then(result => {
+            $scope.appListNames = [];
+            console.log(result);
+            $scope.appListNames = result.data.appList;
+            $scope.appListNames.push({name:"Rephrase your question", shortName:"rephrase"});
+            $scope.appListNames.push({name:"None of the above", shortName:"noneOfTheAbove"});
+            $scope.parentDisableStyle = { display: "block" };
+            $scope.didntAnswerStyle = { display: "block" };
+            $scope.content0Style = { display: "block" };
+            $scope.content1Style = { display: "none" };
+        })
+    };
+
 }]);
 

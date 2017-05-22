@@ -2,12 +2,14 @@
  * Main process
  */
 const electron = require('electron');
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, dialog} = require('electron');
 const fs = require('fs');
 const redis = require('./redis');
+const rp = require('request-promise');
 
 let mainWindow = null,
-    popUpWindow = null;
+    popUpWindow = null,
+    uploadWindow = null;
 
 //To open the Pop up window
 function openPopUpWindow(channel, html) {
@@ -51,7 +53,7 @@ app.on('ready', () => {
         show: false,
         resizable: false,
         alwaysOnTop: true,
-        title: 'SmartBox',
+        title: 'SmartBot',
         webPreferences: {
             javascript: true,
             java: false,
@@ -68,7 +70,7 @@ app.on('ready', () => {
                 frame: false,
                 resizable: false,
                 alwaysOnTop: true,
-                title: 'SmartBox',
+                title: 'SmartBot',
                 webPreferences: {
                     javascript: true,
                     java: false,
@@ -130,8 +132,88 @@ ipcMain.on('resizeWithPos', (e, x, y, z) => {
 });
 
 ipcMain.on('popup-search', (e,appName, question) => {
-    const user = require('./user.json');
-    //const user = require('./../../user.json');
-    redis.set('newSearch-'+user.email,{appName: appName, question: question});
-    popUpWindow.loadURL('file://' + __dirname + '/view/new-popup.html');
+    if(appName.split('+')[0] === 'rephrase' || appName.split('+')[0] === 'noneOfTheAbove') {
+        popUpWindow.close();
+    } else {
+        const user = require('./user.json');
+        //const user = require('./../../user.json');
+        redis.set('newSearch-'+user.email,{appName: appName, question: question});
+        popUpWindow.loadURL('file://' + __dirname + '/view/new-popup.html');
+    }
 });
+
+ipcMain.on('upload-box', (e) => {
+    let uploadWindow = new BrowserWindow({
+        width: 320,
+        height: 380,
+        transparent: true,
+        frame: false,
+        resizable: false,
+        parent: mainWindow,
+        modal: true,
+        alwaysOnTop: true,
+        title: 'SmartBot',
+        webPreferences: {
+            javascript: true,
+            java: false,
+            directWrite: true,
+            defaultEncoding: 'UTF-8'
+        }
+    });
+    uploadWindow.loadURL('file://' + __dirname + '/view/upload.html');
+});
+
+ipcMain.on('startUpload', (e, appName, filePath, fileName) => {
+    dialog.showMessageBox(mainWindow,{
+        type:"info",
+        buttons: ["Ok"],
+        defaultId: 0,
+        title: "Document upload",
+        message: "Document upload is in progress. Meanwhile you can continue your search. You will be notified once the document is uploaded."
+    },(data)=> {
+        rp({
+            method: 'POST',
+            url: "https://smartbox-crawler.mybluemix.net/upload",
+            headers: {
+                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+            },
+            formData: {
+                file: { value: fs.createReadStream(filePath),
+                    options: { filename: fileName, contentType: null } },
+                appName: appName
+            }
+        }).then(data => {
+            console.log(data);
+            if(data && JSON.parse(data).success){
+                dialog.showMessageBox(mainWindow,{
+                    type:"info",
+                    buttons: ["Ok"],
+                    defaultId: 0,
+                    title: "Document upload",
+                    message: "Document uploaded successfully."
+                });
+            } else {
+                dialog.showMessageBox(mainWindow,{
+                    type:"info",
+                    buttons: ["Ok"],
+                    defaultId: 0,
+                    title: "Document upload",
+                    message: "Document upload failed. Please try again ."
+                });
+            }
+            //TODO: Need to handle error cases
+        }).catch(err => {
+            dialog.showMessageBox(mainWindow,{
+                type:"info",
+                buttons: ["Ok"],
+                defaultId: 0,
+                title: "Document upload",
+                message: "Document upload failed. Please try again ."
+            });
+        });
+
+    });
+});
+
+
+

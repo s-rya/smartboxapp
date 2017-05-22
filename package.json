@@ -36,6 +36,7 @@
     "grunt-search": "^0.1.8",
     "gulp": "^3.9.0",
     "gulp-electron": "0.0.9",
+    "ihelp": "git+https://github.com/s-rya/ihelp.git",
     "redis": "^2.7.1",
     "request-promise": "^4.2.0"
   }
