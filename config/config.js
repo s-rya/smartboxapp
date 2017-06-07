@@ -7,7 +7,7 @@ const redis = {
     url : 'redis://admin:OOQJXRSAFFKVXMMQ@bluemix-sandbox-dal-9-portal.7.dblayer.com:25114'
 };
 
-const smartboxserviceURL = 'https://smartbox-dev.mybluemix.net/';
+const smartboxserviceURL = 'https://smart-dev.mybluemix.net/';
 
 module.exports = {
     redis: redis,

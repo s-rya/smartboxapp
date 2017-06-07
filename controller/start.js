@@ -3,6 +3,7 @@
  */
 const {ipcRenderer, remote, app} = require('electron');
 const angularApp = angular.module('start', []);
+const path = require("path");
 const fs = require('fs');
 
 
@@ -19,7 +20,7 @@ angularApp.controller('userController', ['$scope', function ($scope) {
         console.log(this.fname);
         console.log(this.lname);
         var data = '{"fname": "' + this.fname + '","lname": "' + this.lname + '" ,"email": "' + this.email + '"}';
-        fs.writeFile("./user.json", data, function (err) {
+        fs.writeFile(path.join(__dirname, "../user.json"), data, function (err) {
             if (err) {
                 //TODO: Need to decide what need to be done
                 console.log(err);

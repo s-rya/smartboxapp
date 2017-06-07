@@ -5,6 +5,7 @@ const electron = require('electron');
 const {app, BrowserWindow, ipcMain, dialog} = require('electron');
 const fs = require('fs');
 const redis = require('./redis');
+const path = require("path");
 const rp = require('request-promise');
 
 let mainWindow = null,
@@ -61,7 +62,7 @@ app.on('ready', () => {
             defaultEncoding: 'UTF-8'
         }
     });
-    fs.readFile('user.json', 'utf8', (err, data) => {
+    fs.readFile(path.join(__dirname, 'user.json'), 'utf8', (err, data) => {
         if (err) {
             let startUpWindow = new BrowserWindow({
                 width: 320,
@@ -142,7 +143,7 @@ ipcMain.on('popup-search', (e,appName, question) => {
     }
 });
 
-ipcMain.on('upload-box', (e) => {
+ipcMain.on('upload-box', e => {
     let uploadWindow = new BrowserWindow({
         width: 320,
         height: 380,

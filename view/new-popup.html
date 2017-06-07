@@ -85,20 +85,20 @@
         }
         $(document).ready(function () {
             $(document).on('click', "div[id^='block']", function () {
-                    let divID = $(this).attr('id');
-                    if ($("#" + divID + "feedback").is(":visible")) {
-                        $(this).css("height", "60px").css("display", "-webkit-box");
-                        $("#" + divID + "feedback").hide();
-                    } else {
-                        $(this).css("height", "auto").css("display", "block");
-                        $("#" + divID + "feedback").show();
+                let divID = $(this).attr('id');
+                if ($("#" + divID + "feedback").is(":visible")) {
+                    $(this).css("height", "60px").css("display", "-webkit-box");
+                    $("#" + divID + "feedback").hide();
+                } else {
+                    $(this).css("height", "auto").css("display", "block");
+                    $("#" + divID + "feedback").show();
+                }
+                for (i = 0; i < 10; i++) {
+                    if (divID != "block" + i)$("#block" + i).css('height', '60px').css("display", "-webkit-box");
+                    if (divID + "feedback" != "block" + i + "feedback") {
+                        $("#block" + i + 'feedback').hide();
                     }
-                    for (i = 0; i < 10; i++) {
-                        if (divID != "block" + i)$("#block" + i).css('height', '60px').css("display", "-webkit-box");
-                        if (divID + "feedback" != "block" + i + "feedback") {
-                            $("#block" + i + 'feedback').hide();
-                        }
-                    }
+                }
             });
         });
         function thumbsUp(ele) {
@@ -130,26 +130,31 @@
         const remote = require('electron').remote;
         var payload = [];
         function closeWindow() {
+            var email = $("#upImage-0").attr("email");
             for (i = 0; i < 10; i++) {
                 if ($("#upImage-" + i).attr("value") === "true") {
                     payload.push({
                         "id": $("#upImage-" + i).attr("answerId") + "test",
                         "question": $("#upImage-" + i).attr("question"),
+                        "keyword": $("#upImage-" + i).attr("keyword"),
+                        "appName": $("#upImage-" + i).attr("appName"),
                         "rank": "good"
                     })
                 } else if ($("#downImage-" + i).attr("value") === "true") {
                     payload.push({
                         "id": $("#upImage-" + i).attr("answerId") + "test",
                         "question": $("#upImage-" + i).attr("question"),
+                        "keyword": $("#upImage-" + i).attr("keyword"),
+                        "appName": $("#upImage-" + i).attr("appName"),
                         "rank": "bad"
                     })
                 }
             }
-            $.post("https://smartbox-dev.mybluemix.net/rank", {payload: payload});
+            $.post("https://smart-dev.mybluemix.net/rank", {email: email, payload: payload});
             var window = remote.getCurrentWindow();
             setTimeout(function () {
                 window.close();
-            }, 1000);
+            }, 1500);
         }
     </script>
     <style>
@@ -476,7 +481,8 @@
         <div style="float: left" onclick="showPrev()"><a href>&lt;&lt; Back</a></div>
         <div style="float: right" ng-click="showApplicationList()"><a href>Didn't get your answer?</a></div>
     </div>
-    <div id="didntAnswer" class="didntAnswer" ng-style="didntAnswerStyle" style="display: none;position: absolute; z-index:999">
+    <div id="didntAnswer" class="didntAnswer" ng-style="didntAnswerStyle"
+         style="display: none;position: absolute; z-index:999">
         <div id="close"
              style="float: right; margin-top: -10px;margin-right: -5px;" onclick="closeApplist()">
             <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -484,14 +490,19 @@
         <div class="selectApp"><p>Please select the application in which you want to search:</p>
 
             <form ng-submit="sendSearchData()">
-                <div ng-repeat="app in appListNames" class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value={{app.shortName}}+{{app.name}}>{{app.name}}</label></div>
-                    <div ng-switch="appName">
-                        <div ng-switch-when="noneOfTheAbove+None of the above" onclick="openUploadWindow()">
-                            <button style="float: right; margin-top: -52px;  margin-left: 220px;  position: absolute;" id="submit"
-                                    type="submit" class="btn btn-primary">Upload Document for new Application
-                            </button>
-                        </div>
+                <div ng-repeat="app in appListNames" class="radio appRadio"><label><input type="radio"
+                                                                                          style="margin-top: 4px;"
+                                                                                          ng-model="$parent.appName"
+                                                                                          value={{app.shortName}}+{{app.name}}>{{app.name}}</label>
+                </div>
+                <div ng-switch="appName">
+                    <div ng-switch-when="noneOfTheAbove+None of the above" onclick="openUploadWindow()">
+                        <button style="float: right; margin-top: -52px;  margin-left: 220px;  position: absolute;"
+                                id="submit"
+                                type="submit" class="btn btn-primary">Upload Document for new Application
+                        </button>
                     </div>
+                </div>
 
                 <div style="margin: auto; width: 12%">
                     <button style="margin-top: 10px" id="submit" type="submit" class="btn btn-primary">Done</button>
@@ -500,9 +511,14 @@
         </div>
     </div>
     <div class="contentRead" id="content0" ng-style="content0Style">
-        <p ng-if="snippet.length === 0" ng-style="lookingFor" style="font-size: 14px;"><b>Looking for the best answers ...</b></p>
-        <p ng-if="snippet.length > 0" style="font-size: 14px;"><b>Here are the best answers for: <i>{{newQuestion}}</i></b></p>
-        <p ng-style="noResultMessage" style="display:none; font-size: 14px;"><b>Sorry no results were found for <i>{{newQuestion}}</i>. Plese close the window and repharse your search</b></p>
+        <p ng-if="snippet.length === 0" ng-style="lookingFor" style="font-size: 14px;"><b>Looking for the best answers
+            ...</b></p>
+
+        <p ng-if="snippet.length > 0" style="font-size: 14px;"><b>Here are the best answers for: <i>{{newQuestion}}</i></b>
+        </p>
+
+        <p ng-style="noResultMessage" style="display:none; font-size: 14px;"><b>Sorry no results were found for <i>{{newQuestion}}</i>.
+            Plese close the window and repharse your search</b></p>
 
         <div class="incDetContainer1" ng-repeat="msg in snippet | limitTo: 5">
             <div id="block{{$index}}"
@@ -511,7 +527,8 @@
         </div>
         <div ng-if="snippet.length > 5" class="viewMore" style="float: right" onclick="viewMoreResults()"><a href="">View
             more &gt;&gt;</a></div>
-        <div ng-if="snippet.length <= 5 && snippet.length > 0" style="float: right" ng-click="showApplicationList()"><a href>Didn't get your answer?</a></div>
+        <div ng-if="snippet.length <= 5 && snippet.length > 0" style="float: right" ng-click="showApplicationList()"><a
+                href>Didn't get your answer?</a></div>
         <input type="hidden" value="0" id="counter"/><input type="hidden" value="10" id="finalCounter"/>
 
         <div class="pointers" style="display: none"><span id="prev" style="cursor: pointer" onclick="clickPrevious()"> < &nbsp;&nbsp;&nbsp; </span>

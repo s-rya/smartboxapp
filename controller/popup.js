@@ -64,9 +64,9 @@ app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope','$http
                 $rootScope.result.result.forEach((r, i) => {
                     console.log('#######',r.metadata, r.up);
                     $scope.snippet.push(
-                        '<p><b>' + r['Item Name'] + '</b></p><p style="font-size: 11px;">' + r['Documentation with HTML'] + '</p><div style="display: none" id="block'+i+'feedback">' +
-                        '<img id="upImage-'+i+'" value="false" answerId="'+r.id+'" question="'+$rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0]+'" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
-                        '<img id="downImage-'+i+'" value="false" answerId="'+r.id+'" question="'+$rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0]+'" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
+                        '<p><b>' + r['Item Name'] + '</b> - '+ r.score +'</p><p style="font-size: 11px;">' + r['Documentation with HTML'] + '</p><div style="display: none" id="block'+i+'feedback">' +
+                        '<img id="upImage-'+i+'" value="false" email="'+user.email+'" appName="'+r.metadata.applicationName+'" answerId="'+r.id+'" keyword="'+$rootScope.result.keyword + '" question="'+$rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0]+'" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
+                        '<img id="downImage-'+i+'" value="false" email="'+user.email+'" appName="'+r.metadata.applicationName+'" answerId="'+r.id+'" keyword="'+$rootScope.result.keyword + '" question="'+$rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0]+'" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
                         '</div>');
                 });
             } else {

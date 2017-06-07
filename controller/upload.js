@@ -26,7 +26,7 @@ angularApp.controller('uploadCtrl', ['$scope','$rootScope', '$http', function ($
         remote.getCurrentWindow().close();
     };
 
-    //To save the user information into user.json file
+    //To Upload the Document which user selected
     $scope.uploadDoc = function () {
         console.log('selectedAppName ::',this.selectedAppName);
         console.log('applicationName ::',$scope.applicationName);
@@ -45,7 +45,7 @@ angularApp.controller('uploadCtrl', ['$scope','$rootScope', '$http', function ($
                 {name: 'Doc', extensions: ['docx']}
             ],
             properties: ['openFile']
-        }, (file) => {
+        }, file => {
             if (file && file.length > 0) {
                 $scope.filePath = file[0];
                 $scope.fileSelected = true;

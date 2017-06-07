@@ -4,6 +4,7 @@ const app = angular.module('mainView', ['ngRoute', 'ngWebSocket', 'ngSanitize', 
 const config = require('./../config/config');
 const fs = require('fs');
 const rp = require('request-promise');
+const st = require('striptags');
 
 
 
@@ -11,7 +12,7 @@ const rp = require('request-promise');
 app.factory('DataStream', function ($websocket) {
     // Open a WebSocket connection
     //var dataStream = $websocket('wss://smartsearchboxservice.mybluemix.net');
-    var dataStream = $websocket('wss://smartbox-dev.mybluemix.net');
+    var dataStream = $websocket('wss://smart-dev.mybluemix.net');
     dataStream.onOpen(function (data) {
         console.log("connection opened");
         return dataStream;
@@ -46,13 +47,12 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
 
     let chatWindowHeight = 550;
     let isChatWindow = false;
-
+    const user = require('../user.json');
+    //const user = require('../../../user.json');
     $scope.userMsg = [];
 
     //To open the chat window when clicks on the Search Box
     $scope.openChatWindow = function () {
-        const user = require('../user.json');
-        //const user = require('../../../user.json');
         $scope.chatWindowStyle = {
             display: 'block'
         };
@@ -100,8 +100,6 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
 
     //To send the message to SmartBox service when the user hits enter
     $scope.send = function () {
-        const user = require('../user.json');
-        //const user = require('../../../user.json');
         let text = $scope.textbox;
         if (text) {
             const uploadRegex = /^(upload document|upload doc)$/ig;
@@ -194,7 +192,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '<script>$(document).ready(function(){$("div[id^=\'block\']").click(function(){let divID = $(this).attr(\'id\');if($("#"+divID + "feedback").is(":visible")){$(this).css("height", "60px").css("display","-webkit-box");$("#"+divID + "feedback").hide();} else {$(this).css("height", "auto").css("display","block");$("#"+divID + "feedback").show();}for(i=0;i<10;i++){if(divID!="block"+i)$("#block"+i).css(\'height\',\'60px\').css("display","-webkit-box");if(divID+"feedback"!="block"+i+"feedback"){$("#block"+i+\'feedback\').hide();}}});});</script>' +
         '<script>function thumbsUp(ele){var number = $(ele).attr(\'id\').split("-")[1]; var id = $(ele).attr(\'id\'); if($("#"+id).css("backgroundColor") == "rgba(0, 0, 0, 0)"){$("#"+id).css("backgroundColor","greenyellow");$("#" + id).attr("value","true");}else{$("#"+id).css("backgroundColor","rgba(0, 0, 0, 0)");$("#" + id).attr("value","false");} $("#downImage-" + number).attr("value","false");$("#downImage-"+number).css("backgroundColor","rgba(0, 0, 0, 0)") }</script>' +
         '<script>function thumbsDown(ele){var number = $(ele).attr(\'id\').split("-")[1]; var id = $(ele).attr(\'id\'); if($("#"+id).css("backgroundColor") == "rgba(0, 0, 0, 0)"){$("#"+id).css("backgroundColor","blueviolet");$("#" + id).attr("value","true");}else{$("#"+id).css("backgroundColor","rgba(0, 0, 0, 0)");$("#" + id).attr("value","false");} $("#upImage-" + number).attr("value","false");$("#upImage-"+number).css("backgroundColor","rgba(0, 0, 0, 0)")}</script>' +
-        '<script>const remote = require(\'electron\').remote;var payload = [];function closeWindow(){for (i = 0; i < 10; i++) {if($("#upImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"), "rank":"good"})} else if ($("#downImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"), "rank":"bad"})}}$.post("https://smartbox-dev.mybluemix.net/rank",{payload: payload});var window = remote.getCurrentWindow();setTimeout(function(){ window.close(); }, 1000);}</script>';
+        '<script>const remote = require(\'electron\').remote;var payload = [];function closeWindow(){for (i = 0; i < 10; i++) {if($("#upImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"good"})} else if ($("#downImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"bad"})}}$.post("https://smart-dev.mybluemix.net/rank",{email: "'+ user.email +'",payload: payload});var window = remote.getCurrentWindow();setTimeout(function(){ window.close(); }, 1000);}</script>';
 
     let style = '<style>' +
         'body {  font-family: "Lato", sans-serif !important;' +
@@ -443,6 +441,12 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             return string;
     }
 
+    function escapeSpecialCharacters(str){
+        return str.replace(/\\/g, "\\\\")
+            .replace(/\$/g, "\\$")
+            .replace(/'/g, "\\'")
+            .replace(/"/g, "\\\"");
+    }
 
     //Message receiver from SmartBox Service
     DataStream.onMessage(function (message) {
@@ -457,12 +461,10 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             res.forEach((r, i) => {
                 console.log('#######',r.metadata, r.up);
                 resArray.push(
-                    '<p><b>' + r['Item Name'] + '</b></p><p style="font-size: 11px;">' + r['Documentation with HTML'].replace(/\\/g, "\\\\")
-                        .replace(/\$/g, "\\$")
-                        .replace(/'/g, "\\'")
-                        .replace(/"/g, "\\\"") + '</p><div style="display: none" id="block'+i+'feedback">' +
-                    '<img id="upImage-'+i+'" value="false" answerId="'+r.id+'" question="'+data.question+'" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
-                    '<img id="downImage-'+i+'" value="false" answerId="'+r.id+'" question="'+data.question+'" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
+                    '<p><b>' + escapeSpecialCharacters(r['Item Name']) + '</b> - '+ r.score +'</p><p style="font-size: 11px;">' + escapeSpecialCharacters(r['Documentation with HTML']) +
+                    '</p><div style="display: none" id="block'+i+'feedback">' +
+                    '<img id="upImage-'+i+'" value="false" answerId="'+r.id+'" appName="'+r.metadata.applicationName+'" keyword="'+data.keyword+'" question="'+data.question+'" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
+                    '<img id="downImage-'+i+'" value="false" answerId="'+r.id+'" appName="'+r.metadata.applicationName+'" keyword="'+data.keyword+'" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
                     '</div>');
             });
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
