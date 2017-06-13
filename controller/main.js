@@ -192,7 +192,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '<script>$(document).ready(function(){$("div[id^=\'block\']").click(function(){let divID = $(this).attr(\'id\');if($("#"+divID + "feedback").is(":visible")){$(this).css("height", "60px").css("display","-webkit-box");$("#"+divID + "feedback").hide();} else {$(this).css("height", "auto").css("display","block");$("#"+divID + "feedback").show();}for(i=0;i<10;i++){if(divID!="block"+i)$("#block"+i).css(\'height\',\'60px\').css("display","-webkit-box");if(divID+"feedback"!="block"+i+"feedback"){$("#block"+i+\'feedback\').hide();}}});});</script>' +
         '<script>function thumbsUp(ele){var number = $(ele).attr(\'id\').split("-")[1]; var id = $(ele).attr(\'id\'); if($("#"+id).css("backgroundColor") == "rgba(0, 0, 0, 0)"){$("#"+id).css("backgroundColor","greenyellow");$("#" + id).attr("value","true");}else{$("#"+id).css("backgroundColor","rgba(0, 0, 0, 0)");$("#" + id).attr("value","false");} $("#downImage-" + number).attr("value","false");$("#downImage-"+number).css("backgroundColor","rgba(0, 0, 0, 0)") }</script>' +
         '<script>function thumbsDown(ele){var number = $(ele).attr(\'id\').split("-")[1]; var id = $(ele).attr(\'id\'); if($("#"+id).css("backgroundColor") == "rgba(0, 0, 0, 0)"){$("#"+id).css("backgroundColor","blueviolet");$("#" + id).attr("value","true");}else{$("#"+id).css("backgroundColor","rgba(0, 0, 0, 0)");$("#" + id).attr("value","false");} $("#upImage-" + number).attr("value","false");$("#upImage-"+number).css("backgroundColor","rgba(0, 0, 0, 0)")}</script>' +
-        '<script>const remote = require(\'electron\').remote;var payload = [];function closeWindow(){for (i = 0; i < 10; i++) {if($("#upImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"good"})} else if ($("#downImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"bad"})}}$.post("https://smart-dev.mybluemix.net/rank",{email: "'+ user.email +'",payload: payload});var window = remote.getCurrentWindow();setTimeout(function(){ window.close(); }, 1000);}</script>';
+        '<script>const remote = require(\'electron\').remote;var payload = [];function closeWindow(){for (i = 0; i < 10; i++) {if($("#upImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"good"})} else if ($("#downImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"bad"})}}ipcr.send("rankResults",{email: "'+ user.email +'",payload: payload});var window = remote.getCurrentWindow();window.close();}</script>';
 
     let style = '<style>' +
         'body {  font-family: "Lato", sans-serif !important;' +
@@ -311,12 +311,17 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '   margin-left: 97px;' +
         '   background-color: ghostwhite;' +
         '   width: 524px;  ' +
+        '   height:500px;' +
         '   padding: 20px; ' +
         '   border-radius: 20px; ' +
         '   box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);' +
         '   -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));' +
         '   -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6)); ' +
-        '   -o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));  }' +
+        '   -o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));  } ' +
+        '.scrollList{    ' +
+        '   height: 400px;' +
+        '   overflow-y: auto;' +
+        '}' +
         '</style>';
 
     //To set up the Pop up HTML for Discovery service data
@@ -369,8 +374,8 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '' +
             '<div id="didntAnswer" class="didntAnswer" ng-style="didntAnswerStyle" style="display: none;position: absolute; z-index:999"><div id="close" style="float: right; margin-top: -10px;margin-right: -5px;" onclick="closeApplist()">' +
             '<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>' +
-            '<div class="selectApp"><p>Please select the application in which you want to search:</p><form ng-submit="sendSearchData()">' +
-            '' +
+            '<div class="selectApp" style="height: 500px"><p>Please select the application in which you want to search:</p><form ng-submit="sendSearchData()">' +
+            '<div class="scrollList">' +
             '<div ng-repeat="app in appListNames" class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value={{app.shortName}}+{{app.name}}>{{app.name}}</label></div>' +
             '' +
             '' +
@@ -382,8 +387,8 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="drama+Honda DRAMA">Honda DRAMA</label></div>' +*/
             /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value="upload">None of the above</label>' +*/
             '<div ng-switch="appName"><div ng-switch-when="noneOfTheAbove+None of the above" onclick="openUploadWindow()">' +
-            '<button style="float: right; margin-top: -52px;  margin-left: 220px;  position: absolute;" id="submit" type="submit" class="btn btn-primary">Upload Document for new Application</button></div></div>' +
-            '<div style="margin: auto; width: 12%"><button style="margin-top: 10px" id="submit" type="submit" class="btn btn-primary">Done</button></div>' +
+            '<button style="float: right; margin-top: -52px;  margin-left: 220px; " id="submit" type="submit" class="btn btn-primary">Upload Document for new Application</button></div></div>' +
+            '</div><div style="margin: auto; width: 12%"><button style="margin-top: 10px" id="submit" type="submit" class="btn btn-primary">Done</button></div>' +
             '</form></div></div>' +
             '' +
             //'<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>' +
@@ -407,6 +412,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
     //To set up the Pop up HTML for Cloudant data
     const makeIncidentTable = function (data) {
         let html = headers + scripts + style + '</head><body>' +
+            '<script>const ipcr = require("electron").ipcRenderer;</script>' +
             '<div id="readingPane" ng-app="popup"><div class="heading"></div><div id="close" style="float: right; margin-right: 5px; height: 20px;"><button type="button" class="close" aria-label="Close" onclick="closeWindow()">' +
             '<span aria-hidden="true">&times;</span></button></div>' +
             '<div class="contentRead" id="content0">' +
@@ -461,7 +467,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             res.forEach((r, i) => {
                 console.log('#######',r.metadata, r.up);
                 resArray.push(
-                    '<p><b>' + escapeSpecialCharacters(r['Item Name']) + '</b> - '+ r.score +'</p><p style="font-size: 11px;">' + escapeSpecialCharacters(r['Documentation with HTML']) +
+                    '<p><b>' + escapeSpecialCharacters(r['Item Name']) + '</b> - <span style="color: #95d13c;"><b>'+ r.score +'</b><span></p><p style="font-size: 11px;">' + escapeSpecialCharacters(r['Documentation with HTML']) +
                     '</p><div style="display: none" id="block'+i+'feedback">' +
                     '<img id="upImage-'+i+'" value="false" answerId="'+r.id+'" appName="'+r.metadata.applicationName+'" keyword="'+data.keyword+'" question="'+data.question+'" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
                     '<img id="downImage-'+i+'" value="false" answerId="'+r.id+'" appName="'+r.metadata.applicationName+'" keyword="'+data.keyword+'" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +

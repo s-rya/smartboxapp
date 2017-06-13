@@ -7,6 +7,7 @@ const fs = require('fs');
 const redis = require('./redis');
 const path = require("path");
 const rp = require('request-promise');
+const config = require('./config/config');
 
 let mainWindow = null,
     popUpWindow = null,
@@ -132,13 +133,13 @@ ipcMain.on('resizeWithPos', (e, x, y, z) => {
     }
 });
 
-ipcMain.on('popup-search', (e,appName, question) => {
-    if(appName.split('+')[0] === 'rephrase' || appName.split('+')[0] === 'noneOfTheAbove') {
+ipcMain.on('popup-search', (e, appName, question) => {
+    if (appName.split('+')[0] === 'rephrase' || appName.split('+')[0] === 'noneOfTheAbove') {
         popUpWindow.close();
     } else {
         const user = require('./user.json');
         //const user = require('./../../user.json');
-        redis.set('newSearch-'+user.email,{appName: appName, question: question});
+        redis.set('newSearch-' + user.email, {appName: appName, question: question});
         popUpWindow.loadURL('file://' + __dirname + '/view/new-popup.html');
     }
 });
@@ -164,14 +165,14 @@ ipcMain.on('upload-box', e => {
     uploadWindow.loadURL('file://' + __dirname + '/view/upload.html');
 });
 
-ipcMain.on('startUpload', (e, appName, filePath, fileName) => {
-    dialog.showMessageBox(mainWindow,{
-        type:"info",
+ipcMain.on('startUpload', (e, appName, filePath, fileName, isAID) => {
+    dialog.showMessageBox(mainWindow, {
+        type: "info",
         buttons: ["Ok"],
         defaultId: 0,
         title: "Document upload",
         message: "Document upload is in progress. Meanwhile you can continue your search. You will be notified once the document is uploaded."
-    },(data)=> {
+    }, (data)=> {
         rp({
             method: 'POST',
             url: "https://smartbox-crawler.mybluemix.net/upload",
@@ -179,23 +180,26 @@ ipcMain.on('startUpload', (e, appName, filePath, fileName) => {
                 'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
             },
             formData: {
-                file: { value: fs.createReadStream(filePath),
-                    options: { filename: fileName, contentType: null } },
-                appName: appName
+                file: {
+                    value: fs.createReadStream(filePath),
+                    options: {filename: fileName, contentType: null}
+                },
+                appName: appName,
+                isAID: isAID
             }
         }).then(data => {
             console.log(data);
-            if(data && JSON.parse(data).success){
-                dialog.showMessageBox(mainWindow,{
-                    type:"info",
+            if (data && JSON.parse(data).success) {
+                dialog.showMessageBox(mainWindow, {
+                    type: "info",
                     buttons: ["Ok"],
                     defaultId: 0,
                     title: "Document upload",
                     message: "Document uploaded successfully."
                 });
             } else {
-                dialog.showMessageBox(mainWindow,{
-                    type:"info",
+                dialog.showMessageBox(mainWindow, {
+                    type: "info",
                     buttons: ["Ok"],
                     defaultId: 0,
                     title: "Document upload",
@@ -204,8 +208,8 @@ ipcMain.on('startUpload', (e, appName, filePath, fileName) => {
             }
             //TODO: Need to handle error cases
         }).catch(err => {
-            dialog.showMessageBox(mainWindow,{
-                type:"info",
+            dialog.showMessageBox(mainWindow, {
+                type: "info",
                 buttons: ["Ok"],
                 defaultId: 0,
                 title: "Document upload",
@@ -216,5 +220,19 @@ ipcMain.on('startUpload', (e, appName, filePath, fileName) => {
     });
 });
 
+
+ipcMain.on('rankResults', (e, payload) => {
+    console.log('rankResults ::::', payload);
+    if(payload && payload.payload && payload.payload.length > 0){
+        rp({
+            method: 'POST',
+            url: `${config.smartboxserviceURL}rank`,
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }).then(data => console.log('Ranking results ::::', data)).catch(err => console.log('Ranking error >>>>', err));
+    }
+});
 
 

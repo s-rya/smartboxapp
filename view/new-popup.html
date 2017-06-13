@@ -150,11 +150,8 @@
                     })
                 }
             }
-            $.post("https://smart-dev.mybluemix.net/rank", {email: email, payload: payload});
-            var window = remote.getCurrentWindow();
-            setTimeout(function () {
-                window.close();
-            }, 1500);
+            ipcRenderer.send("rankResults", {email: email, payload: payload});
+            window.close();
         }
     </script>
     <style>
@@ -315,6 +312,7 @@
             margin-left: 97px;
             background-color: ghostwhite;
             width: 524px;
+            height:500px;
             padding: 20px;
             border-radius: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
@@ -322,7 +320,10 @@
             -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));
             -o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));
         }
-
+        .scrollList{
+            overflow-y: auto;
+            height: 400px;
+        }
         #loading-wrapper {
             position: fixed;
             background: white;
@@ -487,9 +488,9 @@
              style="float: right; margin-top: -10px;margin-right: -5px;" onclick="closeApplist()">
             <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
-        <div class="selectApp"><p>Please select the application in which you want to search:</p>
+        <div class="selectApp" style="height: 500px"><p>Please select the application in which you want to search:</p>
 
-            <form ng-submit="sendSearchData()">
+            <form ng-submit="sendSearchData()"><div class="scrollList">
                 <div ng-repeat="app in appListNames" class="radio appRadio"><label><input type="radio"
                                                                                           style="margin-top: 4px;"
                                                                                           ng-model="$parent.appName"
@@ -497,13 +498,13 @@
                 </div>
                 <div ng-switch="appName">
                     <div ng-switch-when="noneOfTheAbove+None of the above" onclick="openUploadWindow()">
-                        <button style="float: right; margin-top: -52px;  margin-left: 220px;  position: absolute;"
+                        <button style="float: right; margin-top: -52px;  margin-left: 220px;"
                                 id="submit"
                                 type="submit" class="btn btn-primary">Upload Document for new Application
                         </button>
                     </div>
                 </div>
-
+            </div>
                 <div style="margin: auto; width: 12%">
                     <button style="margin-top: 10px" id="submit" type="submit" class="btn btn-primary">Done</button>
                 </div>

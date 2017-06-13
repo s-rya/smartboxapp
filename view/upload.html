@@ -44,6 +44,10 @@
                 <label>Application Name</label>
                 <select ng-model="selectedAppName" ng-options="app.name as app.name for app in appListNames"></select>
             </div>
+            <div class="form-group">
+                <label>Type of Document </label>
+                <select ng-model="isAid" ng-options="typeOfDoc.value as typeOfDoc.name for typeOfDoc in typeOfDocList"></select>
+            </div>
             <div ng-if="selectedAppName == 'None of the Above'" class="form-group">
                 <input style="height: 40px" ng-model="$parent.applicationName" type="text" class="form-control"
                        id="applicationName" ng-required="true" placeholder="Enter Application Name"/>

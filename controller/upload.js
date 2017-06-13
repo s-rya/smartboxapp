@@ -18,6 +18,7 @@ angularApp.controller('uploadCtrl', ['$scope','$rootScope', '$http', function ($
     }).then(result => {
         $scope.appListNames = result.data.appList;
         $scope.appListNames.push({name:"None of the Above"});
+        $scope.typeOfDocList = [{name : "AID", value : "true"},{name : "Non AID", value : "false"}];
         //$scope.$apply();
     });
 
@@ -30,11 +31,12 @@ angularApp.controller('uploadCtrl', ['$scope','$rootScope', '$http', function ($
     $scope.uploadDoc = function () {
         console.log('selectedAppName ::',this.selectedAppName);
         console.log('applicationName ::',$scope.applicationName);
+        console.log('isAID ::',$scope.isAid);
         console.log($scope.filePath);
         console.log($scope.fileName);
         let appName = this.selectedAppName;
         if(appName === "None of the Above") appName = $scope.applicationName;
-        ipcRenderer.send('startUpload', appName, $scope.filePath,$scope.fileName );
+        ipcRenderer.send('startUpload', appName, $scope.filePath, $scope.fileName, $scope.isAid);
         remote.getCurrentWindow().close();
     };
 
