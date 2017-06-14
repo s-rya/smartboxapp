@@ -4,7 +4,6 @@ const app = angular.module('mainView', ['ngRoute', 'ngWebSocket', 'ngSanitize', 
 const config = require('./../config/config');
 const fs = require('fs');
 const rp = require('request-promise');
-const st = require('striptags');
 
 
 
