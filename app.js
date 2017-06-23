@@ -7,10 +7,12 @@ const fs = require('fs');
 const redis = require('./redis');
 const path = require("path");
 const rp = require('request-promise');
+const {getMac, isMac} = require('getmac');
 const config = require('./config/config');
 
 let mainWindow = null,
     popUpWindow = null,
+    startUpWindow = null,
     uploadWindow = null;
 
 //To open the Pop up window
@@ -63,33 +65,37 @@ app.on('ready', () => {
             defaultEncoding: 'UTF-8'
         }
     });
+
+    startUpWindow = new BrowserWindow({
+        width: 320,
+        height: 380,
+        transparent: true,
+        frame: false,
+        resizable: false,
+        show: false,
+        alwaysOnTop: true,
+        title: 'SmartBot',
+        webPreferences: {
+            javascript: true,
+            java: false,
+            directWrite: true,
+            defaultEncoding: 'UTF-8'
+        }
+    });
     fs.readFile(path.join(__dirname, 'user.json'), 'utf8', (err, data) => {
         if (err) {
-            let startUpWindow = new BrowserWindow({
-                width: 320,
-                height: 380,
-                transparent: true,
-                frame: false,
-                resizable: false,
-                alwaysOnTop: true,
-                title: 'SmartBot',
-                webPreferences: {
-                    javascript: true,
-                    java: false,
-                    directWrite: true,
-                    defaultEncoding: 'UTF-8'
-                }
-            });
             startUpWindow.loadURL('file://' + __dirname + '/view/start.html');
+            startUpWindow.show();
         } else {
-            mainWindow.loadURL('file://' + __dirname + '/view/main.html');
-            mainWindow.show();
+            data = JSON.parse(data);
+            getMac((error, mac) => {
+                checkUser(data.email, mac);
+            });
         }
     });
 
-    ipcMain.on('openSearchBox', () => {
-        mainWindow.loadURL('file://' + __dirname + '/view/main.html');
-        mainWindow.show();
+    ipcMain.on('openSearchBox', (e, email, macAddress) => {
+        checkUser(email, macAddress);
     });
 
     ipcMain.on('openPopUp', (channel, html)=> {
@@ -110,6 +116,20 @@ ipcMain.on('exit', () => {
     app.quit();
 });
 
+ipcMain.on('requestAccess', e => {
+    dialog.showMessageBox(mainWindow, {
+        type: "info",
+        buttons: ["Ok"],
+        defaultId: 0,
+        title: "Access Request raised.",
+        message: "Your access request for OmniBot has been raised. You will be notified by email."
+    },data => app.quit());
+});
+
+ipcMain.on('openApp', e => {
+    mainWindow.loadURL('file://' + __dirname + '/view/main.html');
+    mainWindow.show();
+});
 
 //To resize the window
 ipcMain.on('resize', (e, x, y) => {
@@ -223,7 +243,7 @@ ipcMain.on('startUpload', (e, appName, filePath, fileName, isAID) => {
 
 ipcMain.on('rankResults', (e, payload) => {
     console.log('rankResults ::::', payload);
-    if(payload && payload.payload && payload.payload.length > 0){
+    if (payload && payload.payload && payload.payload.length > 0) {
         rp({
             method: 'POST',
             url: `${config.smartboxserviceURL}rank`,
@@ -235,4 +255,47 @@ ipcMain.on('rankResults', (e, payload) => {
     }
 });
 
-
+const checkUser = (email, macAddress) => {
+    startUpWindow = new BrowserWindow({
+        width: 320,
+        height: 350,
+        show: false,
+        transparent: true,
+        frame: false,
+        resizable: false,
+        alwaysOnTop: true,
+        title: 'SmartBot',
+        webPreferences: {
+            javascript: true,
+            java: false,
+            directWrite: true,
+            defaultEncoding: 'UTF-8'
+        }
+    });
+    rp({
+        method: 'POST',
+        url: `${config.smartboxserviceURL}user`,
+        body: {
+            email: email,
+            macAddress: macAddress
+        },
+        json: true
+    }).then(response => {
+        if (response.canUse) {
+            mainWindow.loadURL('file://' + __dirname + '/view/main.html');
+            mainWindow.show();
+        } else {
+            if (response.reason === 'new-user') {
+                startUpWindow.loadURL('file://' + __dirname + '/view/access.html');
+                startUpWindow.show();
+            } else if (response.reason === 'new-machine') {
+                startUpWindow.loadURL('file://' + __dirname + '/view/activation.html');
+                startUpWindow.show();
+            } else {
+                //TODO: Handle error case
+            }
+        }
+    }).catch(err => {
+        console.log(err);
+    })
+};

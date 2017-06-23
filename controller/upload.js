@@ -7,7 +7,7 @@ const angularApp = angular.module('upload', []);
 const fs = require('fs');
 const rp = require('request-promise');
 
-angularApp.controller('uploadCtrl', ['$scope','$rootScope', '$http', function ($scope,$rootScope, $http) {
+angularApp.controller('uploadCtrl', ['$scope', '$http', function ($scope, $http) {
 
     $scope.filePath = '';
     //$scope.applicationName = '';

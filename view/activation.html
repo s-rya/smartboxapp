@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Smart Box</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+    <link rel='stylesheet prefetch' href='./../assets/bootstrap/css/bootstrap.min.css'>
+    <link rel='stylesheet prefetch' href='http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+
+    <link rel="stylesheet" href="./../assets/css/styles.min.css">
+    <link rel="stylesheet" href="./../css/style.css">
+    <script src='./../assets/js/jquery.min.js'></script>
+    <script src="./../node_modules/angular/angular.js"></script>
+    <script src="./../node_modules/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="./../node_modules/angular-route/angular-route.min.js"></script>
+    <script src="./../node_modules/angular-websocket/dist/angular-websocket.js"></script>
+    <script src="./../node_modules/angular-sanitize/angular-sanitize.js"></script>
+    <script src="./../controller/user.js"></script>
+</head>
+<body ng-app="activation">
+
+<div style="display: block;width: 300px;" class="modal-content" ng-controller="checkUserController">
+    <!-- Modal Header -->
+    <div class="modal-header" style="text-align: center;">
+        <button type="button" style="margin-top: -15px;margin-right: -9px;" class="close"
+                data-dismiss="modal" ng-click="closeStart()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">
+            Enter Activation Code
+        </h4>
+    </div>
+    <form ng-submit="verifyCode()">
+        <!-- Modal Body -->
+        <div class="modal-body" style="padding: 10px;">
+            Seems like you are trying to access OmniBot from a different machine. An activation code has been sent to your registered email. Please enter that activation code here to access OmniBot.
+            <p ng-if="activationFail" style="color: red">Invalid Activation Code.</p>
+            <div class="form-group">
+                <input style="height: 40px" ng-model="activationCode" type="text" class="form-control"
+                       id="activationCode" ng-required="true" placeholder="Activation Code"/>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer" style="text-align: center;padding: 10px;">
+            <button id="submit" type="submit" class="btn btn-primary">
+                Submit
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

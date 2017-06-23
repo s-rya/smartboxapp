@@ -29,6 +29,7 @@
     "electron-log": "^2.2.2",
     "electron-packager": "^7.0.4",
     "electron-prebuilt": "^1.4.13",
+    "getmac": "^1.2.1",
     "grunt": "^1.0.1",
     "grunt-comment-toggler": "^0.2.2",
     "grunt-contrib-copy": "^1.0.0",
@@ -36,7 +37,7 @@
     "grunt-search": "^0.1.8",
     "gulp": "^3.9.0",
     "gulp-electron": "0.0.9",
-    "ihelp": "git+https://github.com/s-rya/ihelp.git",
+    "ihelp": "git+https://github.com/s-rya/ihelp.git#master",
     "redis": "^2.7.1",
     "request-promise": "^4.2.0"
   }
