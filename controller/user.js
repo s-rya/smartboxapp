@@ -25,7 +25,7 @@ angularApp.controller('checkUserController', ['$scope', '$http', function ($scop
 
 
     $scope.verifyCode = function () {
-        let activationCode = this.activationCode;
+        let activationCode = this.activationCode.trim();
         getMac((error, mac) => {
             fs.readFile(path.join(__dirname, "../user.json"), function (err, data) {
                 data = JSON.parse(data);

@@ -465,6 +465,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         if (data.type === 'discovery') {
             res.forEach((r, i) => {
                 console.log('#######',r.metadata, r.up);
+                if(!r.metadata) r.metadata = {};
                 resArray.push(
                     '<p><b>' + escapeSpecialCharacters(r['Item Name']) + '</b> - <span style="color: #95d13c;"><b>'+ r.score +'</b><span></p><p style="font-size: 11px;">' + escapeSpecialCharacters(r['Documentation with HTML']) +
                     '</p><div style="display: none" id="block'+i+'feedback">' +
