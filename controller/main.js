@@ -296,6 +296,8 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '.controller("dataCtrl", ["$scope", "$sce","$http", function ($scope, $sce, $http) { ' +
             '   $scope.sendSearchData = function(){' +
             '       ipcr.send("popup-search",this.appName,\'' + question + '\');    };' +
+            '   $scope.webSearch = function(){' +
+            '       ipcr.send("search-web",\'' + question + '\');    closeWindow(); };' +
             '   $scope.appName = "rephrase+Rephrase your question";' +
             '   $scope.showApplicationList = function(){' +
             '      $http({' +
@@ -332,8 +334,9 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<div class="incDetContainer1" ng-repeat="msg in snippet | limitTo: 5-snippet.length">' +
             '<div id="block{{$index+5}}" style="height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;" ng-bind-html="clean(msg)">' +
             '</div></div>' +
-            '<div style="float: left" onclick="showPrev()"><a href>&lt;&lt; Back</a></div>' +
-            '<div style="float: right" ng-click="showApplicationList()"><a href>Didn\'t get your answer?</a></div></div>' +
+            '<div style="float: left;width: 33%" onclick="showPrev()"><a href>&lt;&lt; Back</a></div>' +
+            '<div style="float: left;text-align: center;width: 33%" ng-click="webSearch()"><a href>Search on Web</a></div>' +
+            '<div style="float: left;text-align: right;width: 33%" ng-click="showApplicationList()"><a href>Didn\'t get your answer?</a></div></div>' +
             '' +
             '<div id="didntAnswer" class="didntAnswer" ng-style="didntAnswerStyle" style="display: none;position: absolute; z-index:999"><div id="close" style="float: right; margin-top: -10px;margin-right: -5px;" onclick="closeApplist()">' +
             '<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>' +
@@ -361,6 +364,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<div id="block{{$index}}" style="height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;" ng-bind-html="clean(msg)">' +
             '</div></div>' +
             '<div ng-if="snippet.length > 5" class="viewMore" style="float: right" onclick="viewMoreResults()"><a href="">View more &gt;&gt;</a></div>' +
+            '<div ng-if="snippet.length <= 5" style="float: left" ng-click="webSearch()"><a href><img src="https://i.stack.imgur.com/G1GZ0.png" width="25px" height="25px">Search on Web</a></div>' +
             '<div ng-if="snippet.length <= 5" style="float: right" ng-click="showApplicationList()"><a href>Didn\'t get your answer?</a></div>';
 
         return html + '<input type="hidden" value="0" id="counter"/>' +

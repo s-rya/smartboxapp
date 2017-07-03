@@ -115,7 +115,7 @@ app.controller('webSearchController', ['$scope', '$sce', function ($scope, $sce)
     ipcr.on('search-term', (e, searchTerm) => {
         searchTerm.forEach(term => {
             if(term.name === 'searchTerm'){
-                $scope.searchURL = $sce.trustAsResourceUrl(`https://www.google.com/search?q=${term.value}`);
+                $scope.searchURL = $sce.trustAsResourceUrl(`${config.webSearchURL}${term.value}`);
                 $scope.$apply();
             }
         });

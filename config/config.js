@@ -9,9 +9,11 @@ const redis = {
 
 const smartboxserviceURL = 'https://smart-dev.mybluemix.net/';
 const smartboxServiceWS = 'wss://smart-dev.mybluemix.net';
+const webSearchURL = 'https://www.google.com/search?q=';
 
 module.exports = {
     redis: redis,
     smartboxserviceURL: smartboxserviceURL,
-    smartboxServiceWS: smartboxServiceWS
+    smartboxServiceWS: smartboxServiceWS,
+    webSearchURL: webSearchURL
 };
