@@ -30,7 +30,6 @@ angularApp.controller('userController', ['$scope', function ($scope) {
                     ipcRenderer.send('openSearchBox', email, mac);
                     remote.getCurrentWindow().close();
                 }
-
                 console.log("The file was saved!");
             });
         });

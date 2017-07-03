@@ -8,8 +8,10 @@ const redis = {
 };
 
 const smartboxserviceURL = 'https://smart-dev.mybluemix.net/';
+const smartboxServiceWS = 'wss://smart-dev.mybluemix.net';
 
 module.exports = {
     redis: redis,
-    smartboxserviceURL: smartboxserviceURL
+    smartboxserviceURL: smartboxserviceURL,
+    smartboxServiceWS: smartboxServiceWS
 };

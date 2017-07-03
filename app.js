@@ -2,13 +2,15 @@
  * Main process
  */
 const electron = require('electron');
-const {app, BrowserWindow, ipcMain, dialog} = require('electron');
+const {app, BrowserWindow, session, ipcMain, dialog} = require('electron');
 const fs = require('fs');
 const redis = require('./redis');
 const path = require("path");
 const rp = require('request-promise');
 const {getMac, isMac} = require('getmac');
 const config = require('./config/config');
+
+let cookies = '';
 
 let mainWindow = null,
     popUpWindow = null,
@@ -46,6 +48,7 @@ function openPopUpWindow(channel, html) {
 }
 //To open the main window
 app.on('ready', () => {
+    cookies = session.defaultSession.cookies;
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize;
     mainWindow = new BrowserWindow({
         width: 335,
@@ -123,7 +126,7 @@ ipcMain.on('requestAccess', e => {
         defaultId: 0,
         title: "Access Request raised.",
         message: "Your access request for OmniBot has been raised. You will be notified by email."
-    },data => app.quit());
+    }, data => app.quit());
 });
 
 ipcMain.on('openApp', e => {
@@ -298,4 +301,76 @@ const checkUser = (email, macAddress) => {
     }).catch(err => {
         console.log(err);
     })
+};
+
+ipcMain.on('search-web', (e, searchTerm) => {
+    console.log('search-web ::::', searchTerm);
+    popUpWindow = new BrowserWindow({
+        width: 724,
+        height: 645,
+        frame: false,
+        show: false,
+        modal: true,
+        transparent: true,
+        parent: mainWindow,
+        alwaysOnTop: true,
+        resizable: false,
+        webPreferences: {
+            javascript: true,
+            java: false,
+            directWrite: true,
+            defaultEncoding: 'utf-8'
+        }
+    });
+    setCookie('searchTerm', searchTerm)
+        .then(() => {
+            popUpWindow.loadURL('file://' + __dirname + '/view/web-search.html');
+            popUpWindow.show();
+        })
+        .catch(console.log); //TODO: Need to handle error case
+
+    popUpWindow.on('closed', () => {
+        console.log('closed search-web window');
+        popUpWindow = null;
+    });
+});
+
+ipcMain.on('getSearchTerm', channel => {
+    getCookies(config.smartboxserviceURL)
+        .then(data => {
+            channel.sender.send('search-term', data)
+        })
+});
+
+
+/*This method is used to set Cookies*/
+const setCookie = (key, text) => {
+    return new Promise((resolve, reject) => {
+        cookies.set({
+            url: config.smartboxserviceURL,
+            name: key,
+            value: text.trim()
+        }, error => {
+            if (error) {
+                reject('Error in setting cookie');
+            } else {
+                resolve();
+            }
+        })
+    });
+};
+
+/*This method is get the cookies*/
+const getCookies = url => {
+    return new Promise((resolve, reject) => {
+        cookies.get({
+            url: url
+        }, (err, cookie) => {
+            if (err) {
+                reject();
+            } else {
+                resolve(cookie);
+            }
+        })
+    });
 };

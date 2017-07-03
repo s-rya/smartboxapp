@@ -28,7 +28,7 @@ app.directive('loading', function () {
 
 app.run(function ($rootScope) {
 
-    redis.get('newSearch-'+user.email)
+    redis.get('newSearch-' + user.email)
         .then(data => {
             $rootScope.redisData = data;
             var options = {
@@ -37,7 +37,7 @@ app.run(function ($rootScope) {
                 body: {
                     "question": data.question + ' in ' + data.appName.split('+')[0],
                     "email": user.email,
-                    "appName" : data.appName.split('+')[1]
+                    "appName": data.appName.split('+')[1]
                 },
                 json: true
             };
@@ -52,7 +52,7 @@ app.run(function ($rootScope) {
 });
 
 
-app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope','$http', function ($scope, $sce, $timeout, $rootScope, $http) {
+app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope', '$http', function ($scope, $sce, $timeout, $rootScope, $http) {
     $scope.snippet = [];
     $scope.isLoading = true;
     $scope.$on('API-loaded', function () {
@@ -60,13 +60,13 @@ app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope','$http
         $scope.isLoading = true;
         $timeout(function () {
             $scope.isLoading = false;
-            if($rootScope.result.result && $rootScope.result.count){
+            if ($rootScope.result.result && $rootScope.result.count) {
                 $rootScope.result.result.forEach((r, i) => {
-                    console.log('#######',r.metadata, r.up);
+                    console.log('#######', r.metadata, r.up);
                     $scope.snippet.push(
-                        '<p><b>' + r['Item Name'] + '</b> - <span style="color: #95d13c;"><b>'+ r.score +'</b><span></p><p style="font-size: 11px;">' + r['Documentation with HTML'] + '</p><div style="display: none" id="block'+i+'feedback">' +
-                        '<img id="upImage-'+i+'" value="false" email="'+user.email+'" appName="'+r.metadata.applicationName+'" answerId="'+r.id+'" keyword="'+$rootScope.result.keyword + '" question="'+$rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0]+'" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
-                        '<img id="downImage-'+i+'" value="false" email="'+user.email+'" appName="'+r.metadata.applicationName+'" answerId="'+r.id+'" keyword="'+$rootScope.result.keyword + '" question="'+$rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0]+'" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
+                        '<p><b>' + r['Item Name'] + '</b> - <span style="color: #95d13c;"><b>' + r.score + '</b><span></p><p style="font-size: 11px;">' + r['Documentation with HTML'] + '</p><div style="display: none" id="block' + i + 'feedback">' +
+                        '<img id="upImage-' + i + '" value="false" email="' + user.email + '" appName="' + r.metadata.applicationName + '" answerId="' + r.id + '" keyword="' + $rootScope.result.keyword + '" question="' + $rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0] + '" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
+                        '<img id="downImage-' + i + '" value="false" email="' + user.email + '" appName="' + r.metadata.applicationName + '" answerId="' + r.id + '" keyword="' + $rootScope.result.keyword + '" question="' + $rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0] + '" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
                         '</div>');
                 });
             } else {
@@ -80,8 +80,8 @@ app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope','$http
         });
     });
 
-    $scope.sendSearchData = function(){
-        ipcr.send("popup-search",this.appName,$rootScope.redisData.question)
+    $scope.sendSearchData = function () {
+        ipcr.send("popup-search", this.appName, $rootScope.redisData.question)
     };
 
     $scope.clean = function (c) {
@@ -90,23 +90,35 @@ app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope','$http
 
 
     $scope.appName = "rephrase+Rephrase your question";
-    $scope.showApplicationList = function(){
+    $scope.showApplicationList = function () {
         $http({
-            method:"GET",
+            method: "GET",
             url: "https://844d8c57-58b6-4391-8b52-50492bc81db2-bluemix.cloudant.com/discovery-collection/b92685acb07f94e969aa1a10460e1e36",
-            headers: {  "Authorization": "Basic ODQ0ZDhjNTctNThiNi00MzkxLThiNTItNTA0OTJiYzgxZGIyLWJsdWVtaXg6YWNiYjBkNGM4YzVhMjUxZGIwNjBkMzg5MGZjOTI5YWZiYjczMmM4MGZmN2FmOTQ4ZGI1ZDRkYjUxMmYzMjdlYQ=="  }
+            headers: {"Authorization": "Basic ODQ0ZDhjNTctNThiNi00MzkxLThiNTItNTA0OTJiYzgxZGIyLWJsdWVtaXg6YWNiYjBkNGM4YzVhMjUxZGIwNjBkMzg5MGZjOTI5YWZiYjczMmM4MGZmN2FmOTQ4ZGI1ZDRkYjUxMmYzMjdlYQ=="}
         }).then(result => {
             $scope.appListNames = [];
             console.log(result);
             $scope.appListNames = result.data.appList;
-            $scope.appListNames.push({name:"Rephrase your question", shortName:"rephrase"});
-            $scope.appListNames.push({name:"None of the above", shortName:"noneOfTheAbove"});
-            $scope.parentDisableStyle = { display: "block" };
-            $scope.didntAnswerStyle = { display: "block" };
-            $scope.content0Style = { display: "block" };
-            $scope.content1Style = { display: "none" };
+            $scope.appListNames.push({name: "Rephrase your question", shortName: "rephrase"});
+            $scope.appListNames.push({name: "None of the above", shortName: "noneOfTheAbove"});
+            $scope.parentDisableStyle = {display: "block"};
+            $scope.didntAnswerStyle = {display: "block"};
+            $scope.content0Style = {display: "block"};
+            $scope.content1Style = {display: "none"};
         })
     };
 
+}]);
+
+app.controller('webSearchController', ['$scope', '$sce', function ($scope, $sce) {
+    ipcr.send('getSearchTerm');
+    ipcr.on('search-term', (e, searchTerm) => {
+        searchTerm.forEach(term => {
+            if(term.name === 'searchTerm'){
+                $scope.searchURL = $sce.trustAsResourceUrl(`https://www.google.com/search?q=${term.value}`);
+                $scope.$apply();
+            }
+        });
+    });
 }]);
 

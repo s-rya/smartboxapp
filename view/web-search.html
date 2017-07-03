@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>SmartBot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }</script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>
+    <script src="../controller/popup.js"></script>
+    <script>if (window.module) module = window.module;</script>
+    <script>
+        const remote = require('electron').remote;
+        function closeWindow() {
+            window.close();
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Lato", sans-serif !important;
+            padding: 0;
+            margin: 0;
+            background: rgba(0, 0, 0, 0);
+        }
+
+        .contentRead {
+            height: 585px;
+            font-size: 12px;
+            margin-top: 22px;
+            display: none;
+            BACKGROUND: WHITE;
+            OPACITY: 1;
+            border-top: 1px solid #99F8FF;
+            border-bottom: 1px solid #99F8FF;
+            border-right: 1px solid #99F8FF;
+            border-left: 1px solid #99F8FF;
+        }
+
+        #content0 {
+            display: block;
+        }
+
+        #readingPane {
+            float: left;
+            -webkit-border-radius: 8px;
+            -moz-border-radius: 8px;
+            box-shadow: 0px 5px 6px #99F8FF;
+            -webkit-box-shadow: 0px 5px 6px #99F8FF;
+            background: white;
+            behavior: url(/pie/PIE.htc);
+            height: 633px;
+            display: block;
+            width: 720px;
+            border: 1px solid #ccc;
+            opacity: 1;
+            BACKGROUND: GHOSTWHITE;
+            border-radius: 6px;
+            color: black;
+        }
+
+        #webview {
+            display: inline-flex;
+            width: 100%;
+            height: 100%
+        }
+
+        .heading {
+            position: absolute;
+            width: 97%;
+            text-align: center;
+            -webkit-app-region: drag;
+            height: 22px;
+        }
+    </style>
+</head>
+<body>
+<div id="readingPane" ng-app="popupSearchApp" ng-controller="webSearchController">
+    <div class="heading"></div>
+    <div id="close" style="float: right; margin-right: 5px; height: 20px;">
+        <button type="button" class="close" aria-label="Close" onclick="closeWindow()"><span
+                aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="contentRead" id="content0" ng-style="content1Style">
+        <webview id="webview" ng-src={{searchURL}}></webview>
+    </div>
+    <script>
+        onload = () => {
+            const webview = document.getElementById('webview');
+            //webview.setZoomFactor(0.3);
+            webview.addEventListener('dom-ready', () => {
+                webview.setZoomFactor(0.70);
+            });
+            webview.addEventListener('keydown', event => {
+                if (event.keyCode == 8) {
+                    console.log('BACKSPACE was pressed');
+
+                    // Call event.preventDefault() to stop the character before the cursor
+                    // from being deleted. Remove this line if you don't want to do that.
+                    //event.preventDefault();
+                    if(webview.canGoBack()){
+                        webview.goBack();
+                    }
+                }
+            });
+//            webview.openDevTools();
+
+        }
+    </script>
+</div>
+</body>
+</html>

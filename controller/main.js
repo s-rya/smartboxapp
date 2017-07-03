@@ -6,12 +6,11 @@ const fs = require('fs');
 const rp = require('request-promise');
 
 
-
 //Angular factory module for Websocket connection to SmartBox service
 app.factory('DataStream', function ($websocket) {
     // Open a WebSocket connection
     //var dataStream = $websocket('wss://smartsearchboxservice.mybluemix.net');
-    var dataStream = $websocket('wss://smart-dev.mybluemix.net');
+    var dataStream = $websocket(config.smartboxServiceWS);
     dataStream.onOpen(function (data) {
         console.log("connection opened");
         return dataStream;
@@ -97,63 +96,28 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         ipcRenderer.send('resizeWithPos', 335, 70, chatWindowHeight);
     };
 
+
     //To send the message to SmartBox service when the user hits enter
     $scope.send = function () {
         let text = $scope.textbox;
+        text = text.trim();
         if (text) {
             const uploadRegex = /^(upload document|upload doc)$/ig;
             const helpRegex = /^(help|help me)$/ig;
+            const webSearchRegex = /(.*)(on web|on internet|in internet)$/g;
             $scope.userMsg.push({"data": text, "class": "user"});
-            if(uploadRegex.test(text.trim())){
+            if (uploadRegex.test(text)) {
                 ipcRenderer.send('upload-box');
-                /*dialog.showOpenDialog(remote.getCurrentWindow(),{
-                    title: 'Select file to upload',
-                    filters: [
-                        { name: 'Doc', extensions: ['docx'] }
-                    ],
-                    properties: ['openFile']
-                },(file) => {
-                    if(file && file.length > 0) {
-                        dialog.showMessageBox(remote.getCurrentWindow(),{
-                            type:"info",
-                            buttons: ["Ok"],
-                            defaultId: 0,
-                            title: "Document upload",
-                            message: "Document upload is in progress."
-                        });
-
-                        rp({
-                            method: 'POST',
-                            url: config.smartboxserviceURL + 'upload',
-                            headers: {
-                                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
-                            },
-                            formData: {
-                                file: { value: fs.createReadStream(file[0]),
-                                    options: { filename: file[0].split('\\').pop(), contentType: null } }
-                            }
-                        }).then(data => {
-                            console.log(data.success);
-                            console.log(data);
-                            if(data && JSON.parse(data).success){
-                                dialog.showMessageBox(remote.getCurrentWindow(),{
-                                    type:"info",
-                                    buttons: ["Ok"],
-                                    defaultId: 0,
-                                    title: "Document upload",
-                                    message: "Document uploaded successfully."
-                                });
-                            }
-                            //TODO: Need to handle error cases
-                        }).catch(err => {
-                            console.log(err);
-
-                        });
-                    }
-                });*/
-            } else if(helpRegex.test(text.trim())){
-                $scope.userMsg.push({"data": 'Just type in to get the results like <i>Dealers in TESS, what is reevoo?<i>', "class": "bot"});
-            }else {
+            } else if (webSearchRegex.test(text)) {
+                let regex = /(.*)(on web|on internet|in internet)$/g;
+                let match = regex.exec(text);
+                ipcRenderer.send('search-web', match[1]);
+            } else if (helpRegex.test(text)) {
+                $scope.userMsg.push({
+                    "data": 'Just type in to get the results like <i>Dealers in TESS, what is reevoo?<i>',
+                    "class": "bot"
+                });
+            } else {
                 DataStream.send({
                     "input": {"text": text},
                     "user": user,
@@ -191,7 +155,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         '<script>$(document).ready(function(){$("div[id^=\'block\']").click(function(){let divID = $(this).attr(\'id\');if($("#"+divID + "feedback").is(":visible")){$(this).css("height", "60px").css("display","-webkit-box");$("#"+divID + "feedback").hide();} else {$(this).css("height", "auto").css("display","block");$("#"+divID + "feedback").show();}for(i=0;i<10;i++){if(divID!="block"+i)$("#block"+i).css(\'height\',\'60px\').css("display","-webkit-box");if(divID+"feedback"!="block"+i+"feedback"){$("#block"+i+\'feedback\').hide();}}});});</script>' +
         '<script>function thumbsUp(ele){var number = $(ele).attr(\'id\').split("-")[1]; var id = $(ele).attr(\'id\'); if($("#"+id).css("backgroundColor") == "rgba(0, 0, 0, 0)"){$("#"+id).css("backgroundColor","greenyellow");$("#" + id).attr("value","true");}else{$("#"+id).css("backgroundColor","rgba(0, 0, 0, 0)");$("#" + id).attr("value","false");} $("#downImage-" + number).attr("value","false");$("#downImage-"+number).css("backgroundColor","rgba(0, 0, 0, 0)") }</script>' +
         '<script>function thumbsDown(ele){var number = $(ele).attr(\'id\').split("-")[1]; var id = $(ele).attr(\'id\'); if($("#"+id).css("backgroundColor") == "rgba(0, 0, 0, 0)"){$("#"+id).css("backgroundColor","blueviolet");$("#" + id).attr("value","true");}else{$("#"+id).css("backgroundColor","rgba(0, 0, 0, 0)");$("#" + id).attr("value","false");} $("#upImage-" + number).attr("value","false");$("#upImage-"+number).css("backgroundColor","rgba(0, 0, 0, 0)")}</script>' +
-        '<script>const remote = require(\'electron\').remote;var payload = [];function closeWindow(){for (i = 0; i < 10; i++) {if($("#upImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"good"})} else if ($("#downImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"bad"})}}ipcr.send("rankResults",{email: "'+ user.email +'",payload: payload});var window = remote.getCurrentWindow();window.close();}</script>';
+        '<script>const remote = require(\'electron\').remote;var payload = [];function closeWindow(){for (i = 0; i < 10; i++) {if($("#upImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"good"})} else if ($("#downImage-"+ i).attr("value") === "true") {payload.push({"id" : $("#upImage-"+ i).attr("answerId") + "test", "question":$("#upImage-"+ i).attr("question"),"keyword": $("#upImage-" + i).attr("keyword"),"appName": $("#upImage-" + i).attr("appName"), "rank":"bad"})}}ipcr.send("rankResults",{email: "' + user.email + '",payload: payload});var window = remote.getCurrentWindow();window.close();}</script>';
 
     let style = '<style>' +
         'body {  font-family: "Lato", sans-serif !important;' +
@@ -331,7 +295,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             'angular.module("popup", ["ngSanitize"])' +
             '.controller("dataCtrl", ["$scope", "$sce","$http", function ($scope, $sce, $http) { ' +
             '   $scope.sendSearchData = function(){' +
-            '       ipcr.send("popup-search",this.appName,\''+question+'\');    };' +
+            '       ipcr.send("popup-search",this.appName,\'' + question + '\');    };' +
             '   $scope.appName = "rephrase+Rephrase your question";' +
             '   $scope.showApplicationList = function(){' +
             '      $http({' +
@@ -378,19 +342,19 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<div ng-repeat="app in appListNames" class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value={{app.shortName}}+{{app.name}}>{{app.name}}</label></div>' +
             '' +
             '' +
-            /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="rephrase">Rephrase your question</label></div>' +
-            '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="tess+Honda TESS">Honda TESS</label></div>' +
-            '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="webepc+Honda WebEPC">Honda WebEPC</label></div>' +
-            '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="mdm+Honda MDM">Honda MDM</label></div>' +
-            '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="customerdb+Honda CustomerDB">Honda CustomerDB</label></div>' +
-            '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="drama+Honda DRAMA">Honda DRAMA</label></div>' +*/
-            /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value="upload">None of the above</label>' +*/
+                /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="rephrase">Rephrase your question</label></div>' +
+                 '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="tess+Honda TESS">Honda TESS</label></div>' +
+                 '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="webepc+Honda WebEPC">Honda WebEPC</label></div>' +
+                 '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="mdm+Honda MDM">Honda MDM</label></div>' +
+                 '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="customerdb+Honda CustomerDB">Honda CustomerDB</label></div>' +
+                 '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="drama+Honda DRAMA">Honda DRAMA</label></div>' +*/
+                /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value="upload">None of the above</label>' +*/
             '<div ng-switch="appName"><div ng-switch-when="noneOfTheAbove+None of the above" onclick="openUploadWindow()">' +
             '<button style="float: right; margin-top: -52px;  margin-left: 220px; " id="submit" type="submit" class="btn btn-primary">Upload Document for new Application</button></div></div>' +
             '</div><div style="margin: auto; width: 12%"><button style="margin-top: 10px" id="submit" type="submit" class="btn btn-primary">Done</button></div>' +
             '</form></div></div>' +
             '' +
-            //'<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>' +
+                //'<div ng-bind-html="clean(msg)" ng-repeat="msg in snippet" class="contentRead" id="content{{$index}}"></div>' +
             '<div class="contentRead" id="content0" ng-style="content0Style">' +
             '<p style="font-size: 14px;"><b>Here are the best answers for: <i>' + question + '</i></b></p>' +
             '<div class="incDetContainer1" ng-repeat="msg in snippet | limitTo: 5">' +
@@ -446,7 +410,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             return string;
     }
 
-    function escapeSpecialCharacters(str){
+    function escapeSpecialCharacters(str) {
         return str.replace(/\\/g, "\\\\")
             .replace(/\$/g, "\\$")
             .replace(/'/g, "\\'")
@@ -464,13 +428,13 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         }
         if (data.type === 'discovery') {
             res.forEach((r, i) => {
-                console.log('#######',r.metadata, r.up);
-                if(!r.metadata) r.metadata = {};
+                console.log('#######', r.metadata, r.up);
+                if (!r.metadata) r.metadata = {};
                 resArray.push(
-                    '<p><b>' + escapeSpecialCharacters(r['Item Name']) + '</b> - <span style="color: #95d13c;"><b>'+ r.score +'</b><span></p><p style="font-size: 11px;">' + escapeSpecialCharacters(r['Documentation with HTML']) +
-                    '</p><div style="display: none" id="block'+i+'feedback">' +
-                    '<img id="upImage-'+i+'" value="false" answerId="'+r.id+'" appName="'+r.metadata.applicationName+'" keyword="'+data.keyword+'" question="'+data.question+'" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
-                    '<img id="downImage-'+i+'" value="false" answerId="'+r.id+'" appName="'+r.metadata.applicationName+'" keyword="'+data.keyword+'" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
+                    '<p><b>' + escapeSpecialCharacters(r['Item Name']) + '</b> - <span style="color: #95d13c;"><b>' + r.score + '</b><span></p><p style="font-size: 11px;">' + escapeSpecialCharacters(r['Documentation with HTML']) +
+                    '</p><div style="display: none" id="block' + i + 'feedback">' +
+                    '<img id="upImage-' + i + '" value="false" answerId="' + r.id + '" appName="' + r.metadata.applicationName + '" keyword="' + data.keyword + '" question="' + data.question + '" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
+                    '<img id="downImage-' + i + '" value="false" answerId="' + r.id + '" appName="' + r.metadata.applicationName + '" keyword="' + data.keyword + '" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
                     '</div>');
             });
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
