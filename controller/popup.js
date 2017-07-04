@@ -84,6 +84,11 @@ app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope', '$htt
         ipcr.send("popup-search", this.appName, $rootScope.redisData.question)
     };
 
+    $scope.webSearch = function () {
+        ipcr.send("search-web", $rootScope.redisData.question);
+        closeWindow();
+    };
+
     $scope.clean = function (c) {
         return $sce.trustAsHtml(c);
     };

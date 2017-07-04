@@ -15,6 +15,7 @@ let cookies = '';
 let mainWindow = null,
     popUpWindow = null,
     startUpWindow = null,
+    webSearchWindow = null,
     uploadWindow = null;
 
 //To open the Pop up window
@@ -305,7 +306,7 @@ const checkUser = (email, macAddress) => {
 
 ipcMain.on('search-web', (e, searchTerm) => {
     console.log('search-web ::::', searchTerm);
-    popUpWindow = new BrowserWindow({
+    webSearchWindow = new BrowserWindow({
         width: 724,
         height: 645,
         frame: false,
@@ -324,14 +325,14 @@ ipcMain.on('search-web', (e, searchTerm) => {
     });
     setCookie('searchTerm', searchTerm)
         .then(() => {
-            popUpWindow.loadURL('file://' + __dirname + '/view/web-search.html');
-            popUpWindow.show();
+            webSearchWindow.loadURL('file://' + __dirname + '/view/web-search.html');
+            webSearchWindow.show();
         })
         .catch(console.log); //TODO: Need to handle error case
 
-    popUpWindow.on('closed', () => {
+    webSearchWindow.on('closed', () => {
         console.log('closed search-web window');
-        popUpWindow = null;
+        webSearchWindow = null;
     });
 });
 
