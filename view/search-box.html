@@ -48,7 +48,7 @@
              style="display: none; height: 470px; width: 100%; background-image:url('./../assets/img/chat.jpg'); border: 1px solid #ccc; border-radius: 6px;"
              ng-style="chatWindowStyle">
 
-            <div id="close" style="float: right; margin-right: 5px;" ng-click="closeChatWindow()">
+            <div id="close" style="float: right; margin-right: 5px;" ng-click="!isPopUpOpen&&closeChatWindow()">
                 <button type="button" class="close" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -70,7 +70,7 @@
         </div>
         <div>
             <input style="height: 45px; margin-top: 11px; padding-left: 70px;" ng-keyup="openChatWindow()"
-                   class="form-control" ng-model="textbox"
+                   class="form-control" ng-model="textbox" ng-disabled="isPopUpOpen"
                    placeholder="Ask SmartBot" ng-click="openChatWindow()" />
 
             <img id='watsonpic' src='./../assets/img/Watson_logo_100px.gif'

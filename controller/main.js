@@ -48,6 +48,8 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
     const user = require('../user.json');
     //const user = require('../../../user.json');
     $scope.userMsg = [];
+    $scope.isPopUpOpen = false;
+
 
     //To open the chat window when clicks on the Search Box
     $scope.openChatWindow = function () {
@@ -67,6 +69,8 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
 
     ipcRenderer.on('popUpClosed', () => {
         console.log('recieved close event in UI');
+        $scope.isPopUpOpen = false;
+        $scope.$apply();
         //$scope.userMsg.push({"data": 'are you happy with the results?', "class": "bot"})
     });
 
@@ -111,6 +115,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             } else if (webSearchRegex.test(text)) {
                 let regex = /(.*)(on web|on internet|in internet)$/g;
                 let match = regex.exec(text);
+                $scope.isPopUpOpen = true;
                 ipcRenderer.send('search-web', match[1]);
             } else if (helpRegex.test(text)) {
                 $scope.userMsg.push({
@@ -447,6 +452,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
                 }
             });
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
+            $scope.isPopUpOpen = true;
             ipcRenderer.send('openPopUp', setPopUpData(resArray, data.question));
         } else if (data.type === 'cloudant') {
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});

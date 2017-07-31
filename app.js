@@ -332,6 +332,7 @@ ipcMain.on('search-web', (e, searchTerm) => {
 
     webSearchWindow.on('closed', () => {
         console.log('closed search-web window');
+        e.sender.send('popUpClosed', 'bye');
         webSearchWindow = null;
     });
 });
