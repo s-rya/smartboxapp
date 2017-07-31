@@ -4,7 +4,6 @@
 const electron = require('electron');
 const {app, BrowserWindow, session, ipcMain, dialog} = require('electron');
 const fs = require('fs');
-const redis = require('./redis');
 const path = require("path");
 const rp = require('request-promise');
 const {getMac, isMac} = require('getmac');
@@ -161,10 +160,11 @@ ipcMain.on('popup-search', (e, appName, question) => {
     if (appName.split('+')[0] === 'rephrase' || appName.split('+')[0] === 'noneOfTheAbove') {
         popUpWindow.close();
     } else {
-        const user = require('./user.json');
-        //const user = require('./../../user.json');
-        redis.set('newSearch-' + user.email, {appName: appName, question: question});
-        popUpWindow.loadURL('file://' + __dirname + '/view/new-popup.html');
+        setCookie('newSearch', JSON.stringify({appName: appName, question: question}))
+            .then(() => {
+                popUpWindow.loadURL('file://' + __dirname + '/view/new-popup.html');
+            })
+            .catch(console.log); //TODO: Need to handle error case
     }
 });
 
@@ -336,13 +336,21 @@ ipcMain.on('search-web', (e, searchTerm) => {
     });
 });
 
+/*This event is for getting the cookies values*/
 ipcMain.on('getSearchTerm', channel => {
+    console.log("***** getSearchTerm *******");
     getCookies(config.smartboxserviceURL)
         .then(data => {
             channel.sender.send('search-term', data)
         })
 });
 
+
+ipcMain.on('saveDiscoveryResults', (e, result) => {
+    console.log(app.getPath('userData'));
+   setCookie('discoveryResult', JSON.stringify(result))
+    .then(console.log).catch(console.log);
+});
 
 /*This method is used to set Cookies*/
 const setCookie = (key, text) => {
@@ -353,6 +361,7 @@ const setCookie = (key, text) => {
             value: text.trim()
         }, error => {
             if (error) {
+                console.log(error);
                 reject('Error in setting cookie');
             } else {
                 resolve();

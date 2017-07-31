@@ -414,6 +414,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             return string;
     }
 
+    /* This method escapes the Special Characters */
     function escapeSpecialCharacters(str) {
         return str.replace(/\\/g, "\\\\")
             .replace(/\$/g, "\\$")
@@ -432,14 +433,18 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         }
         if (data.type === 'discovery') {
             res.forEach((r, i) => {
+                let appName = '';
                 console.log('#######', r.metadata, r.up);
                 if (!r.metadata) r.metadata = {};
-                resArray.push(
-                    '<p><b>' + escapeSpecialCharacters(r['Item Name']) + '</b> - <span style="color: #95d13c;"><b>' + r.score + '</b><span></p><p style="font-size: 11px;">' + escapeSpecialCharacters(r['Documentation with HTML']) +
-                    '</p><div style="display: none" id="block' + i + 'feedback">' +
-                    '<img id="upImage-' + i + '" value="false" answerId="' + r.id + '" appName="' + r.metadata.applicationName + '" keyword="' + data.keyword + '" question="' + data.question + '" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
-                    '<img id="downImage-' + i + '" value="false" answerId="' + r.id + '" appName="' + r.metadata.applicationName + '" keyword="' + data.keyword + '" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
-                    '</div>');
+                if(r.metadata && r.metadata.applicationName) appName = `${r.metadata.applicationName} - `;
+                if(r['Documentation with HTML'].trim()){
+                    resArray.push(
+                        '<p><b>' + appName + escapeSpecialCharacters(r['Item Name']) + '</b> - <span style="color: #95d13c;"><b>' + r.score + '</b><span></p><p style="font-size: 11px;">' + escapeSpecialCharacters(r['Documentation with HTML']) +
+                        '</p><div style="display: none" id="block' + i + 'feedback">' +
+                        '<img id="upImage-' + i + '" value="false" answerId="' + r.id + '" appName="' + r.metadata.applicationName + '" keyword="' + data.keyword + '" question="' + data.question + '" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
+                        '<img id="downImage-' + i + '" value="false" answerId="' + r.id + '" appName="' + r.metadata.applicationName + '" keyword="' + data.keyword + '" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
+                        '</div>');
+                }
             });
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
             ipcRenderer.send('openPopUp', setPopUpData(resArray, data.question));

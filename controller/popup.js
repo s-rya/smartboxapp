@@ -5,7 +5,6 @@ const app = angular.module('popupSearchApp', ['ngSanitize']);
 const ipcr = require("electron").ipcRenderer;
 const fs = require('fs');
 const rp = require('request-promise');
-const redis = require('./../redis');
 const config = require('./../config/config');
 const user = require('./../user.json');
 //const user = require('../../../user.json');
@@ -28,27 +27,30 @@ app.directive('loading', function () {
 
 app.run(function ($rootScope) {
 
-    redis.get('newSearch-' + user.email)
-        .then(data => {
-            $rootScope.redisData = data;
-            var options = {
-                method: 'POST',
-                uri: config.smartboxserviceURL + 'discovery',
-                body: {
-                    "question": data.question + ' in ' + data.appName.split('+')[0],
-                    "email": user.email,
-                    "appName": data.appName.split('+')[1]
-                },
-                json: true
-            };
-            return rp(options);
-
-        }).then(res => {
-            console.log(res);
-            $rootScope.result = res;
-            $rootScope.$broadcast('API-loaded');
+    ipcr.send('getSearchTerm');
+    ipcr.on('search-term', (e, searchTerm) => {
+        searchTerm.forEach(term => {
+            if (term.name === 'newSearch') {
+                let data = JSON.parse(term.value);
+                $rootScope.redisData = data;
+                var options = {
+                    method: 'POST',
+                    uri: config.smartboxserviceURL + 'discovery',
+                    body: {
+                        "question": data.question + ' in ' + data.appName.split('+')[0],
+                        "email": user.email,
+                        "appName": data.appName.split('+')[1]
+                    },
+                    json: true
+                };
+                rp(options).then(res => {
+                    console.log(res);
+                    $rootScope.result = res;
+                    $rootScope.$broadcast('API-loaded');
+                });
+            }
         });
-
+    });
 });
 
 
@@ -62,12 +64,17 @@ app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope', '$htt
             $scope.isLoading = false;
             if ($rootScope.result.result && $rootScope.result.count) {
                 $rootScope.result.result.forEach((r, i) => {
+                    let appName = '';
                     console.log('#######', r.metadata, r.up);
-                    $scope.snippet.push(
-                        '<p><b>' + r['Item Name'] + '</b> - <span style="color: #95d13c;"><b>' + r.score + '</b><span></p><p style="font-size: 11px;">' + r['Documentation with HTML'] + '</p><div style="display: none" id="block' + i + 'feedback">' +
-                        '<img id="upImage-' + i + '" value="false" email="' + user.email + '" appName="' + r.metadata.applicationName + '" answerId="' + r.id + '" keyword="' + $rootScope.result.keyword + '" question="' + $rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0] + '" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
-                        '<img id="downImage-' + i + '" value="false" email="' + user.email + '" appName="' + r.metadata.applicationName + '" answerId="' + r.id + '" keyword="' + $rootScope.result.keyword + '" question="' + $rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0] + '" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
-                        '</div>');
+                    if (!r.metadata) r.metadata = {};
+                    if(r.metadata && r.metadata.applicationName) appName = `${r.metadata.applicationName} - `;
+                    if(r['Documentation with HTML'].trim()) {
+                        $scope.snippet.push(
+                            '<p><b>' + appName + r['Item Name'] + '</b> - <span style="color: #95d13c;"><b>' + r.score + '</b><span></p><p style="font-size: 11px;">' + r['Documentation with HTML'] + '</p><div style="display: none" id="block' + i + 'feedback">' +
+                            '<img id="upImage-' + i + '" value="false" email="' + user.email + '" appName="' + r.metadata.applicationName + '" answerId="' + r.id + '" keyword="' + $rootScope.result.keyword + '" question="' + $rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0] + '" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-happy-48.png" height="30px;" width="30px;">' +
+                            '<img id="downImage-' + i + '" value="false" email="' + user.email + '" appName="' + r.metadata.applicationName + '" answerId="' + r.id + '" keyword="' + $rootScope.result.keyword + '" question="' + $rootScope.redisData.question + ' in ' + $rootScope.redisData.appName.split('+')[0] + '" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
+                            '</div>');
+                    }
                 });
             } else {
                 $scope.noResultMessage = {
