@@ -93,7 +93,7 @@ app.controller('popupSearch', ['$scope', '$sce', '$timeout', '$rootScope', '$htt
                         if(r.metadata && r.metadata.applicationName) appName = `${r.metadata.applicationName} - `;
                         if(r['Documentation with HTML'].trim()) {
                             $scope.snippet.push(
-                                '<p><b>' + appName + escapeSpecialCharacters(r['Item Name']) + '</b> - <span style="color: #95d13c;"><b>' + r.score + '</b><span></p><p style="font-size: 11px;">' + escapeSpecialCharacters(r['Documentation with HTML']) + '</p><div style="display: none" id="block' + i + 'feedback">' +
+                                '<p><b>' + appName + escapeSpecialCharacters(r['Item Name']) + '</b> - <span style="color: #95d13c;"><b>' + r.score + '</b><span></p><p style="font-size: 11px;">' + r['Documentation with HTML'] + '</p><div style="display: none" id="block' + i + 'feedback">' +
                                 '<img id="upImage-' + i + '" value="false" email="' + user.email + '" appName="' + r.metadata.applicationName + '" answerId="' + r.id + '" keyword="' + $rootScope.result.keyword + '" question="' + $scope.newQuestion + '" style="float: left; border-radius:20px;" onclick="thumbsUp(this)" src="../assets/img/up.png" height="30px;" width="30px;">' +
                                 '<img id="downImage-' + i + '" value="false" email="' + user.email + '" appName="' + r.metadata.applicationName + '" answerId="' + r.id + '" keyword="' + $rootScope.result.keyword + '" question="' + $scope.newQuestion + '" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="../assets/img/down.png" height="30px;" width="30px;">' +
                                 '</div>');
