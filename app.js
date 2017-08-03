@@ -11,6 +11,9 @@ const config = require('./config/config');
 
 let cookies = '';
 
+let discoveryData = '';
+let cloudantData = '';
+
 let mainWindow = null,
     popUpWindow = null,
     startUpWindow = null,
@@ -18,7 +21,7 @@ let mainWindow = null,
     uploadWindow = null;
 
 //To open the Pop up window
-function openPopUpWindow(channel, html) {
+function openPopUpWindow(channel) {
     popUpWindow = new BrowserWindow({
         width: 724,
         height: 645,
@@ -37,7 +40,7 @@ function openPopUpWindow(channel, html) {
         }
     });
 
-    popUpWindow.loadURL("data:text/html;charset=UTF-8," + html);
+    popUpWindow.loadURL('file://' + __dirname + '/view/new-popup.html');
     popUpWindow.show();
 
     popUpWindow.on('closed', () => {
@@ -332,7 +335,7 @@ ipcMain.on('search-web', (e, searchTerm) => {
 
     webSearchWindow.on('closed', () => {
         console.log('closed search-web window');
-        e.sender.send('popUpClosed', 'bye');
+        //e.sender.send('popUpClosed', 'bye');
         webSearchWindow = null;
     });
 });
@@ -340,17 +343,34 @@ ipcMain.on('search-web', (e, searchTerm) => {
 /*This event is for getting the cookies values*/
 ipcMain.on('getSearchTerm', channel => {
     console.log("***** getSearchTerm *******");
-    getCookies(config.smartboxserviceURL)
-        .then(data => {
-            channel.sender.send('search-term', data)
-        })
+    if(discoveryData){
+        channel.sender.send('search-term', discoveryData, 'discovery');
+        discoveryData = '';
+    } else if(cloudantData){
+        channel.sender.send('search-term', cloudantData, 'cloudant');
+        cloudantData = '';
+    } else {
+        getCookies(config.smartboxserviceURL)
+            .then(data => {
+                channel.sender.send('search-term', data)
+            })
+    }
 });
 
 
 ipcMain.on('saveDiscoveryResults', (e, result) => {
-    console.log(app.getPath('userData'));
-   setCookie('discoveryResult', JSON.stringify(result))
-    .then(console.log).catch(console.log);
+    discoveryData = result;
+    if (!popUpWindow) {
+        openPopUpWindow(e);
+    }
+});
+
+
+ipcMain.on('saveCloudantResults', (e, result) => {
+    cloudantData = result;
+    if (!popUpWindow) {
+        openPopUpWindow(e);
+    }
 });
 
 /*This method is used to set Cookies*/

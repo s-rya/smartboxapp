@@ -7,10 +7,11 @@
         window.module = module;
         module = undefined;
     }</script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>
+    <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/popup.css">
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../node_modules/angular/angular.min.js"></script>
+    <script src="../node_modules/angular-sanitize/angular-sanitize.js"></script>
     <script src="../controller/popup.js"></script>
     <script>if (window.module) module = window.module;</script>
     <script>
@@ -154,315 +155,6 @@
             window.close();
         }
     </script>
-    <style>
-        body {
-            font-family: "Lato", sans-serif !important;
-            padding: 0;
-            margin: 0;
-            background: rgba(0, 0, 0, 0);
-        }
-
-        .contentRead {
-            overflow-y: auto;
-            padding: 15px 40px;
-            height: 585px;
-            font-size: 12px;
-            margin-top: 22px;
-            display: none;
-            BACKGROUND: WHITE;
-            OPACITY: 1;
-            border-top: 1px solid #99F8FF;
-            border-bottom: 1px solid #99F8FF;
-            border-right: 1px solid #99F8FF;
-            border-left: 1px solid #99F8FF;
-        }
-
-        #content0 {
-            display: block;
-        }
-
-        #readingPane {
-            float: left;
-            -webkit-border-radius: 8px;
-            -moz-border-radius: 8px;
-            box-shadow: 0px 5px 6px #99F8FF;
-            -webkit-box-shadow: 0px 5px 6px #99F8FF;
-            background: white;
-            behavior: url(/pie/PIE.htc);
-            height: 633px;
-            display: block;
-            width: 720px;
-            border: 1px solid #ccc;
-            opacity: 1;
-            BACKGROUND: GHOSTWHITE;
-            border-radius: 6px;
-            color: black;
-        }
-
-        .pointers {
-            color: #707070;
-            text-align: center;
-            font-weight: bold;
-            font-size: 12px;
-            padding-top: 3px;
-        }
-
-        .pointers:hover {
-            color: black;
-        }
-
-        .heading {
-            position: absolute;
-            width: 97%;
-            text-align: center;
-            -webkit-app-region: drag;
-            height: 22px;
-        }
-
-        img {
-            max-width: 650px
-        }
-
-        #backButton {
-            width: 42px;
-            height: 42px;
-        }
-
-        .backImg {
-            width: 28px;
-            height: 28px;
-            margin-top: 15px;
-            border-radius: 50%/50%;
-            background-color: white;
-            -moz-transform: scaleX(-1);
-            -o-transform: scaleX(-1);
-            -webkit-transform: scaleX(-1);
-            transform: scaleX(-1);
-            filter: FlipH;
-            -ms-filter: "FlipH";
-            cursor: pointer;
-            left: -20px;
-        }
-
-        .backImg:hover, .editImg:hover {
-            width: 42px;
-            height: 42px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-            -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-            -webkit-box-shadow: 0 0 10px rgba(153, 248, 255, 0.6);
-            -o-box-shadow: 0 0 10px rgba(153, 248, 255, 0.6);
-        }
-
-        .editImg {
-            width: 28px;
-            height: 28px;
-            margin-top: 15px;
-            border-radius: 50%/50%;
-            background-color: white;
-            cursor: pointer;
-        }
-
-        .incDetContainer {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-            -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));
-            -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));
-            -o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));
-            padding-left: 10px;
-            padding-bottom: 10px;
-            border-radius: 10px;
-        }
-
-        .navigation {
-            height: 40px;
-        }
-
-        .incDetContainer1 {
-            border-bottom: 1px solid #99F8FF;
-            margin-bottom: 10px;
-            cursor: pointer;
-            padding-bottom: 25px;
-            padding-top: 5px;
-        }
-
-        #parentDisable {
-            display: none;
-            position: fixed;
-            top: 24px;
-            left: 0;
-            background: white;
-            opacity: 0.8;
-            z-index: 998;
-            height: 94%;
-            width: 99%;
-        }
-
-        input[type=radio] {
-            margin-top: 1px;
-        }
-
-        .appRadio {
-            border-bottom: 1px solid #99F8FF;
-            height: 45px;
-            padding-top: 10px;
-            padding-left: 10px;
-        }
-
-        .didntAnswer {
-            margin-top: 65px;
-            margin-left: 97px;
-            background-color: ghostwhite;
-            width: 524px;
-            height:500px;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-            -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));
-            -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));
-            -o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.6));
-        }
-        .scrollList{
-            overflow-y: auto;
-            height: 400px;
-        }
-        #loading-wrapper {
-            position: fixed;
-            background: white;
-            opacity: 0.8;
-            width: 99%;
-            height: 94%;
-            left: 0;
-            top: 24px;
-        }
-
-        #loading-text {
-            display: block;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            color: #999;
-            width: 100px;
-            height: 30px;
-            margin: -7px 0 0 -45px;
-            text-align: center;
-            font-family: 'PT Sans Narrow', sans-serif;
-            font-size: 20px;
-        }
-
-        #loading-content {
-            display: block;
-            position: relative;
-            left: 50%;
-            top: 50%;
-            width: 170px;
-            height: 170px;
-            margin: -85px 0 0 -85px;
-            border: 3px solid #F00;
-        }
-
-        #loading-content:after {
-            content: "";
-            position: absolute;
-            border: 3px solid #0F0;
-            left: 15px;
-            right: 15px;
-            top: 15px;
-            bottom: 15px;
-        }
-
-        #loading-content:before {
-            content: "";
-            position: absolute;
-            border: 3px solid #00F;
-            left: 5px;
-            right: 5px;
-            top: 5px;
-            bottom: 5px;
-        }
-
-        #loading-content {
-            border: 3px solid transparent;
-            border-top-color: #4D658D;
-            border-bottom-color: #4D658D;
-            border-radius: 50%;
-            -webkit-animation: loader 2s linear infinite;
-            -moz-animation: loader 2s linear infinite;
-            -o-animation: loader 2s linear infinite;
-            animation: loader 2s linear infinite;
-        }
-
-        #loading-content:before {
-            border: 3px solid transparent;
-            border-top-color: #D4CC6A;
-            border-bottom-color: #D4CC6A;
-            border-radius: 50%;
-            -webkit-animation: loader 3s linear infinite;
-            -moz-animation: loader 2s linear infinite;
-            -o-animation: loader 2s linear infinite;
-            animation: loader 3s linear infinite;
-        }
-
-        #loading-content:after {
-            border: 3px solid transparent;
-            border-top-color: #84417C;
-            border-bottom-color: #84417C;
-            border-radius: 50%;
-            -webkit-animation: loader 1.5s linear infinite;
-            animation: loader 1.5s linear infinite;
-            -moz-animation: loader 2s linear infinite;
-            -o-animation: loader 2s linear infinite;
-        }
-
-        @-webkit-keyframes loaders {
-            0% {
-                -webkit-transform: rotate(0deg);
-                -ms-transform: rotate(0deg);
-                transform: rotate(0deg);
-            }
-            100% {
-                -webkit-transform: rotate(360deg);
-                -ms-transform: rotate(360deg);
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes loader {
-            0% {
-                -webkit-transform: rotate(0deg);
-                -ms-transform: rotate(0deg);
-                transform: rotate(0deg);
-            }
-            100% {
-                -webkit-transform: rotate(360deg);
-                -ms-transform: rotate(360deg);
-                transform: rotate(360deg);
-            }
-        }
-
-        #content-wrapper {
-            color: #FFF;
-            position: fixed;
-            left: 0;
-            top: 20px;
-            width: 100%;
-            height: 100%;
-        }
-
-        #header {
-            width: 800px;
-            margin: 0 auto;
-            text-align: center;
-            height: 100px;
-            background-color: #666;
-        }
-
-        #content {
-            width: 800px;
-            height: 1000px;
-            margin: 0 auto;
-            text-align: center;
-            background-color: #888;
-        }
-    </style>
 </head>
 <body>
 <div id="readingPane" ng-app="popupSearchApp" ng-controller="popupSearch">
@@ -473,72 +165,149 @@
         <button type="button" class="close" aria-label="Close" onclick="closeWindow()"><span
                 aria-hidden="true">&times;</span></button>
     </div>
-    <div ng-if="snippet.length > 5" class="contentRead" id="content1" ng-style="content1Style">
-        <div class="incDetContainer1" ng-repeat="msg in snippet | limitTo: 5-snippet.length">
-            <div id="block{{$index+5}}"
-                 style="height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;"
-                 ng-bind-html="clean(msg)"></div>
-        </div>
-        <div style="float: left;width: 33%" onclick="showPrev()"><a href>&lt;&lt; Back</a></div>
-        <div style="float: left;text-align: center;width: 33%" ng-click="webSearch()"><a href>Search on Web</a></div>
-        <div style="float: left;text-align: right;width: 33%" ng-click="showApplicationList()"><a href>Didn't get your answer?</a></div>
-    </div>
-    <div id="didntAnswer" class="didntAnswer" ng-style="didntAnswerStyle"
-         style="display: none;position: absolute; z-index:999">
-        <div id="close"
-             style="float: right; margin-top: -10px;margin-right: -5px;" onclick="closeApplist()">
-            <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        </div>
-        <div class="selectApp" style="height: 500px"><p>Please select the application in which you want to search:</p>
 
-            <form ng-submit="sendSearchData()"><div class="scrollList">
-                <div ng-repeat="app in appListNames" class="radio appRadio"><label><input type="radio"
-                                                                                          style="margin-top: 4px;"
-                                                                                          ng-model="$parent.appName"
-                                                                                          value={{app.shortName}}+{{app.name}}>{{app.name}}</label>
+
+    <div ng-if="isCloudantData">
+        <div class="contentRead" id="content0">
+            <div class="container" id="incidentContainer" style="display:block"><h2>Incidents</h2>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Priority</th>
+                            <th>Description</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="d in cloudantData">
+                            <td class="incident" id="{{d.incidentId}}" style="cursor:pointer;color:#0000EE;"
+                                ng-click='showDetails(d.incidentId)'>{{d.incidentId}}
+                            </td>
+                            <td>{{d.priority}}</td>
+                            <td ng-bind-html="truncate(d.incidentDesc)"></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div ng-switch="appName">
-                    <div ng-switch-when="noneOfTheAbove+None of the above" onclick="openUploadWindow()">
-                        <button style="float: right; margin-top: -52px;  margin-left: 220px;"
-                                id="submit"
-                                type="submit" class="btn btn-primary">Upload Document for new Application
-                        </button>
+            </div>
+            <div ng-repeat="d in cloudantData" id="{{d.incidentId}}container" class="incDetContainer"
+                 style="display:none">
+                <div class="navigation">
+                    <div id="backButton" ng-click="goBack(d.incidentId)" style="marign:0;padding:0; float:left;">
+                        <img src="../assets/img/back.png"
+                             class="backImg" alt="Back"></div>
+                    <div id="editButton" style="padding:0;float:right;margin-right:10px;"><img
+                            src="../assets/img/edit.png"
+                            class="editImg" alt="Edit"></div>
+                </div>
+                <div class="card" style="width: 50rem;margin-left:20px;margin-right:20px;">
+                    <div style="width: 560px;word-break: break-word;" class="card-block">
+                        <h2 class="card-title">{{d.incidentId}}</h2>
+                        <h4 class="card-title">{{d.applicationName}}</h4>
+                        <h4 class="card-title">{{d.assignmentGroup}}</h4>
+
+                        <p class="card-text priority"><b>Priority: {{d.priority}}</b>&nbsp;&nbsp;&nbsp;&nbsp;<b
+                                style="margin-left: 50px;">Assigned to:</b> {{d.assignedTo}}&nbsp;&nbsp;&nbsp;&nbsp;<b
+                                style="margin-left: 50px;">Status:</b> {{d.status}}</p>
+
+                        <p class="card-text description" ng-bind-html="lineBreaks('<b>Description:</b><br/>'+ d.incidentDesc)"></p>
+                        <p class="card-text description" ng-bind-html="lineBreaks('<b>Work Notes:</b><br/>'+ d.workNotes)"></p>
                     </div>
                 </div>
             </div>
-                <div style="margin: auto; width: 12%">
-                    <button style="margin-top: 10px" id="submit" type="submit" class="btn btn-primary">Done</button>
-                </div>
-            </form>
+
+
         </div>
     </div>
-    <div class="contentRead" id="content0" ng-style="content0Style">
-        <p ng-if="snippet.length === 0" ng-style="lookingFor" style="font-size: 14px;"><b>Looking for the best answers
-            ...</b></p>
 
-        <p ng-if="snippet.length > 0" style="font-size: 14px;"><b>Here are the best answers for: <i>{{newQuestion}}</i></b>
-        </p>
 
-        <p ng-style="noResultMessage" style="display:none; font-size: 14px;"><b>Sorry no results were found for <i>{{newQuestion}}</i>.
-            Please close the window and repharse your search</b></p>
-
-        <div class="incDetContainer1" ng-repeat="msg in snippet | limitTo: 5">
-            <div id="block{{$index}}"
-                 style="height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;"
-                 ng-bind-html="clean(msg)"></div>
+    <div ng-if="!isCloudantData">
+        <div ng-if="snippet.length > 5" class="contentRead" id="content1" ng-style="content1Style">
+            <div class="incDetContainer1" ng-repeat="msg in snippet | limitTo: 5-snippet.length">
+                <div id="block{{$index+5}}"
+                     style="height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;"
+                     ng-bind-html="clean(msg)"></div>
+            </div>
+            <div style="float: left;width: 33%" onclick="showPrev()"><a href>&lt;&lt; Back</a></div>
+            <div style="float: left;text-align: center;width: 33%" ng-click="webSearch()"><a href>Search on Web</a>
+            </div>
+            <div style="float: left;text-align: right;width: 33%" ng-click="showApplicationList()"><a href>Didn't
+                get
+                your answer?</a></div>
         </div>
-        <div ng-if="snippet.length > 5" class="viewMore" style="float: right" onclick="viewMoreResults()"><a href="">View
-            more &gt;&gt;</a></div>
-        <div ng-if="snippet.length <= 5" style="float: left" ng-click="webSearch()"><a href>Search on Web</a></div>
-        <div ng-if="snippet.length <= 5 && snippet.length > 0" style="float: right" ng-click="showApplicationList()"><a
-                href>Didn't get your answer?</a></div>
-        <input type="hidden" value="0" id="counter"/><input type="hidden" value="10" id="finalCounter"/>
+        <div id="didntAnswer" class="didntAnswer" ng-style="didntAnswerStyle"
+             style="display: none;position: absolute; z-index:999">
+            <div id="close"
+                 style="float: right; margin-top: -10px;margin-right: -5px;" onclick="closeApplist()">
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="selectApp" style="height: 500px"><p>Please select the application in which you want to
+                search:</p>
 
-        <div class="pointers" style="display: none"><span id="prev" style="cursor: pointer" onclick="clickPrevious()"> < &nbsp;&nbsp;&nbsp; </span>
-            <span id="pageNumber"> 1&nbsp;/&nbsp;10 </span><span id="next" style="cursor: pointer"
-                                                                 onclick="clickNext()"> &nbsp;&nbsp;&nbsp; > </span>
+                <form ng-submit="sendSearchData()">
+                    <div class="scrollList">
+                        <div ng-repeat="app in appListNames" class="radio appRadio"><label><input type="radio"
+                                                                                                  style="margin-top: 4px;"
+                                                                                                  ng-model="$parent.appName"
+                                                                                                  value={{app.shortName}}+{{app.name}}>{{app.name}}</label>
+                        </div>
+                        <div ng-switch="appName">
+                            <div ng-switch-when="noneOfTheAbove+None of the above" onclick="openUploadWindow()">
+                                <button style="float: right; margin-top: -52px;  margin-left: 220px;"
+                                        id="submit"
+                                        type="submit" class="btn btn-primary">Upload Document for new Application
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin: auto; width: 12%">
+                        <button style="margin-top: 10px" id="submit" type="submit" class="btn btn-primary">Done
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
+        <div class="contentRead" id="content0" ng-style="content0Style">
+            <p ng-if="snippet.length === 0" ng-style="lookingFor" style="font-size: 14px;"><b>Looking for the best
+                answers
+                ...</b></p>
+
+            <p ng-if="snippet.length > 0" style="font-size: 14px;"><b>Here are the best answers for:
+                <i>{{newQuestion}}</i></b>
+            </p>
+
+            <p ng-style="noResultMessage" style="display:none; font-size: 14px;"><b>Sorry no results were found for
+                <i>{{newQuestion}}</i>.
+                Please close the window and repharse your search</b></p>
+
+            <div class="incDetContainer1" ng-repeat="msg in snippet | limitTo: 5">
+                <div id="block{{$index}}"
+                     style="height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;"
+                     ng-bind-html="clean(msg)"></div>
+            </div>
+            <div ng-if="snippet.length > 5" class="viewMore" style="float: right" onclick="viewMoreResults()"><a
+                    href="">View
+                more &gt;&gt;</a></div>
+            <div ng-if="snippet.length <= 5" style="float: left" ng-click="webSearch()"><a href>Search on Web</a>
+            </div>
+            <div ng-if="snippet.length <= 5 && snippet.length > 0" style="float: right"
+                 ng-click="showApplicationList()"><a
+                    href>Didn't get your answer?</a></div>
+            <input type="hidden" value="0" id="counter"/><input type="hidden" value="10" id="finalCounter"/>
+
+            <div class="pointers" style="display: none"><span id="prev" style="cursor: pointer"
+                                                              onclick="clickPrevious()"> < &nbsp;&nbsp;&nbsp; </span>
+                <span id="pageNumber"> 1&nbsp;/&nbsp;10 </span><span id="next" style="cursor: pointer"
+                                                                     onclick="clickNext()"> &nbsp;&nbsp;&nbsp; > </span>
+            </div>
+        </div>
+
     </div>
+
+
 </div>
 </body>
 </html>

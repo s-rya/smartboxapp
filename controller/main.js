@@ -115,7 +115,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             } else if (webSearchRegex.test(text)) {
                 let regex = /(.*)(on web|on internet|in internet)$/g;
                 let match = regex.exec(text);
-                $scope.isPopUpOpen = true;
+                //$scope.isPopUpOpen = true;
                 ipcRenderer.send('search-web', match[1]);
             } else if (helpRegex.test(text)) {
                 $scope.userMsg.push({
@@ -139,7 +139,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
         }
     };
 
-    let headers = '<!DOCTYPE html><html lang="en"><head><title>SmartBox</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
+    /*let headers = '<!DOCTYPE html><html lang="en"><head><title>SmartBox</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
 
     let scripts = '<script>if (typeof module === \'object\') {window.module = module;module = undefined;}</script>' +
         '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">' +
@@ -350,13 +350,13 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             '<div ng-repeat="app in appListNames" class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value={{app.shortName}}+{{app.name}}>{{app.name}}</label></div>' +
             '' +
             '' +
-                /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="rephrase">Rephrase your question</label></div>' +
+                /!*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="rephrase">Rephrase your question</label></div>' +
                  '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="tess+Honda TESS">Honda TESS</label></div>' +
                  '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="webepc+Honda WebEPC">Honda WebEPC</label></div>' +
                  '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="mdm+Honda MDM">Honda MDM</label></div>' +
                  '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="customerdb+Honda CustomerDB">Honda CustomerDB</label></div>' +
-                 '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="drama+Honda DRAMA">Honda DRAMA</label></div>' +*/
-                /*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value="upload">None of the above</label>' +*/
+                 '<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="appName" ng-required="!appName" value="drama+Honda DRAMA">Honda DRAMA</label></div>' +*!/
+                /!*'<div class="radio appRadio"><label><input type="radio" style="margin-top: 4px;" ng-model="$parent.appName" value="upload">None of the above</label>' +*!/
             '<div ng-switch="appName"><div ng-switch-when="noneOfTheAbove+None of the above" onclick="openUploadWindow()">' +
             '<button style="float: right; margin-top: -52px;  margin-left: 220px; " id="submit" type="submit" class="btn btn-primary">Upload Document for new Application</button></div></div>' +
             '</div><div style="margin: auto; width: 12%"><button style="margin-top: 10px" id="submit" type="submit" class="btn btn-primary">Done</button></div>' +
@@ -398,20 +398,20 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
                 '<div class="navigation">' +
                 '<div id="backButton" onclick="goBack(\'' + d.incidentId + '\')" style="marign:0;padding:0; float:left;"><img src="http://icons.iconarchive.com/icons/icons8/ios7/512/Arrows-Right-icon.png" class="backImg" alt="Back"></div>' +
                 '<div id="editButton" style="padding:0;float:right;margin-right:10px;"><img src="https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_mode_edit_48px-128.png" class="editImg" alt="Edit"></div></div>' +
-                '<div class="card" style="width: 50rem;margin-left:20px;margin-right:20px;"><div class="card-block">' +
+                '<div class="card" style="width: 50rem;margin-left:20px;margin-right:20px;"><div style="width: 560px;word-break: break-word;" class="card-block">' +
                 '<h2 class="card-title">' + d.incidentId + '</h2>' +
                 '<h4 class="card-title">' + d.applicationName + '</h4>' +
                 '<h4 class="card-title">' + d.assignmentGroup + '</h4>' +
-                '<p class="card-text priority"><b>' + d.priority + '</b>&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Assigned to:</b> ' + d.assignedTo + '&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Status:</b> ' + d.status + '</p>' +
-                '<p class="card-text description"><b>Description:</b><br/>' + d.incidentDesc + '</p>' +
-                '<p class="card-text description"><b>Work Notes:</b>' + d.workNotes.replace(/(\d{4}-\d{2}-\d{2})/g, '<br/><br/>$1') + '</p>' +
+                '<p class="card-text priority"><b>Priority: ' + d.priority + '</b>&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Assigned to:</b> ' + d.assignedTo + '&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 50px;">Status:</b> ' + d.status + '</p>' +
+                '<p class="card-text description"><b>Description:</b><br/>' + d.incidentDesc.replace(/\n/g, '<br/>') + '</p>' +
+                '<p class="card-text description"><b>Work Notes:</b><br/>' + d.workNotes.replace(/\n/g, '<br/>') + '</p>' +
                 '</div></div></div>';
         });
         return html + '</tbody></table></div></div>' + incidentCardHtml +
             '</div></div></body></html>';
     };
 
-    /*This method inserts ellipsis if the text length is more than 60*/
+    /!*This method inserts ellipsis if the text length is more than 60*!/
     function truncate(string) {
         if (string.length > 60)
             return string.substring(0, 55) + '...';
@@ -419,13 +419,13 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             return string;
     }
 
-    /* This method escapes the Special Characters */
+    /!* This method escapes the Special Characters *!/
     function escapeSpecialCharacters(str) {
         return str.replace(/\\/g, "\\\\")
             .replace(/\$/g, "\\$")
             .replace(/'/g, "\\'")
             .replace(/"/g, "\\\"");
-    }
+    }*/
 
     //Message receiver from SmartBox Service
     DataStream.onMessage(function (message) {
@@ -437,7 +437,7 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
             DataStream.context = data.context;
         }
         if (data.type === 'discovery') {
-            res.forEach((r, i) => {
+            /*res.forEach((r, i) => {
                 let appName = '';
                 console.log('#######', r.metadata, r.up);
                 if (!r.metadata) r.metadata = {};
@@ -450,13 +450,17 @@ app.controller('chatWindow', ['$scope', 'DataStream', function ($scope, DataStre
                         '<img id="downImage-' + i + '" value="false" answerId="' + r.id + '" appName="' + r.metadata.applicationName + '" keyword="' + data.keyword + '" style="float: right; border-radius:20px;" onclick="thumbsDown(this)" src="https://cdn2.iconfinder.com/data/icons/social-productivity-line-art-1/128/face-sad-48.png" height="30px;" width="30px;">' +
                         '</div>');
                 }
-            });
+            });*/
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
-            $scope.isPopUpOpen = true;
-            ipcRenderer.send('openPopUp', setPopUpData(resArray, data.question));
+            //$scope.isPopUpOpen = true;
+            console.log('ssssssssssssss', res);
+            ipcRenderer.send('saveDiscoveryResults', data);
+            //ipcRenderer.send('openPopUp', setPopUpData(resArray, data.question));
         } else if (data.type === 'cloudant') {
             $scope.userMsg.push({"data": 'SmartBox is showing the best results now.', "class": "bot"});
-            ipcRenderer.send('openPopUp', makeIncidentTable(res));
+            console.log(res);
+            ipcRenderer.send('saveCloudantResults', res);
+            //ipcRenderer.send('openPopUp', makeIncidentTable(res));
         } else {
             if (isChatWindow) {
                 $scope.userMsg.push({"data": res, "class": "bot"});
